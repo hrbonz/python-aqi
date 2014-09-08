@@ -8,6 +8,9 @@ A library to convert between AQI value and pollutant concentration
 * United States Environmental Protection Agency (EPA)
 * China Ministry of Environmental Protection (MEP)
 
+.. image:: https://travis-ci.org/hrbonz/python-aqi.svg?branch=master
+    :target: https://travis-ci.org/hrbonz/python-aqi
+
 Usage
 -----
 
