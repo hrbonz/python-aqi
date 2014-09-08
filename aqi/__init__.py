@@ -10,7 +10,7 @@ from aqi.algos import get_algo
 __author__ = "Stefan \"hr\" Berder"
 __contact__ = "hr@bonz.org"
 __license__ = "BSD 3-Clause"
-__version__ = "v0.1"
+__version__ = "v0.2"
 
 
 def to_iaqi(elem, cc, algo=ALGO_EPA):
