@@ -24,6 +24,7 @@ class BaseAQI(object):
 
     def aqi(self, ccs):
         """Calculate the AQI based on a list of pollutants
+
         :param ccs: a list of tuples of pollutants concentrations with
                     pollutant constant and concentration as values
         :type ccs: list
