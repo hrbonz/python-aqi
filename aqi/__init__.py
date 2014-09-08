@@ -7,6 +7,11 @@ from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
 
 from aqi.algos import get_algo
 
+__author__ = "Stefan \"hr\" Berder"
+__contact__ = "hr@bonz.org"
+__license__ = "BSD 3-Clause"
+__version__ = "v0.1"
+
 
 def to_iaqi(elem, cc, algo=ALGO_EPA):
     """Calculate an intermediate AQI for a given pollutant. This is the
