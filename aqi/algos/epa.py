@@ -30,8 +30,8 @@ class AQI(PiecewiseAQI):
                 (Decimal('0.116'), Decimal('0.374')),
             ],
             POLLUTANT_O3_1H: [
-                (None, None),
-                (None, None),
+                (0, 0),
+                (0, 0),
                 (Decimal('0.125'), Decimal('0.164')),
                 (Decimal('0.165'), Decimal('0.204')),
                 (Decimal('0.205'), Decimal('0.404')),
