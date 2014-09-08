@@ -17,7 +17,7 @@ class TestEPA(unittest.TestCase):
         """Test Ozone AQI"""
         myaqi = AQI()
         self.assertEqual(
-            myaqi.iaqi(POLLUTANT_O3_8H, 0.08753333),
+            myaqi.iaqi(POLLUTANT_O3_8H, '0.08753333'),
             129)
 
     def test_O3_PM25_CO(self):
