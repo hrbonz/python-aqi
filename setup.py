@@ -2,8 +2,6 @@
 import os
 from setuptools import setup, find_packages
 
-import aqi
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,10 +12,10 @@ long_description = open(os.path.join(here, 'README.rst')).read()
 
 setup(
     name='python-aqi',
-    version=aqi.__version__,
-    author=aqi.__author__,
-    author_email=aqi.__contact__,
-    license=aqi.__license__,
+    version="v0.2",
+    author="Stefan \"hr\" Berder",
+    author_email="hr@bonz.org",
+    license="BSD 3-Clause",
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     url='https://github.com/hrbonz/python-aqi',
     description='A library to convert between AQI value and pollutant '
