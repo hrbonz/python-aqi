@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from decimal import *
+from aqi.constants import POLLUTANT_NAMES
 
 
 class BaseAQI(object):
-    """
-    A generic AQI class
-    """
+    """A generic AQI class"""
 
     def iaqi(self, elem, cc):
         """Calculate an intermediate AQI for a given pollutant. This is
@@ -42,11 +41,15 @@ class BaseAQI(object):
         else:
             return _aqi
 
+    def list_pollutants(self):
+        """List pollutants covered by an algorithm, return a list of
+        pollutant names.
+        """
+        raise NotImplementedError
+
 
 class PiecewiseAQI(BaseAQI):
-    """
-    A piecewise function AQI class (like EPA or MEP)
-    """
+    """A piecewise function AQI class (like EPA or MEP)"""
 
     piecewise = None
 
@@ -75,3 +78,9 @@ class PiecewiseAQI(BaseAQI):
         # equation
         value = (aqihi - aqilo) / (bphi - bplo) * (_cc - bplo) + aqilo
         return value.quantize(Decimal('1.'), rounding=ROUND_HALF_EVEN)
+
+    def list_pollutants(self):
+        ret = []
+        for bp in self.piecewise['bp'].keys():
+            ret.append(POLLUTANT_NAMES[bp])
+        return ret

@@ -49,7 +49,7 @@ Convert an IAQI to its pollutant concentration::
 Command line
 ------------
 
-List supported algorithmas and pollutants::
+List supported algorithms and pollutants::
 
     $ aqi -l
     epa: pm25, pm10, o3_8h, o3_1h, co, so2, no2

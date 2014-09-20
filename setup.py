@@ -16,7 +16,7 @@ setup(
     author="Stefan \"hr\" Berder",
     author_email="hr@bonz.org",
     license="BSD 3-Clause",
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=find_packages(exclude=['contrib', 'docs', 'test*']),
     url='https://github.com/hrbonz/python-aqi',
     description='A library to convert between AQI value and pollutant '
     'concentration (µg/m³ or ppm)',
@@ -31,4 +31,9 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     keywords='air quality pm2.5 EPA MEP',
+    entry_points = {
+        'console_scripts': [
+            'aqi=aqi:console_aqi',
+        ],
+    },
 )
