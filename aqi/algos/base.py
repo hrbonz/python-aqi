@@ -10,7 +10,7 @@ class BaseAQI(object):
 
     def iaqi(self, elem, cc):
         """Calculate an intermediate AQI for a given pollutant. This is
-        the heart of the algo.
+        the heart of the algo. Return the IAQI for the given pollutant.
 
         .. warning:: the concentration is passed as a string so
         :class:`decimal.Decimal` doesn't act up with binary floats.
@@ -22,17 +22,25 @@ class BaseAQI(object):
         """
         raise NotImplementedError
 
-    def aqi(self, ccs):
-        """Calculate the AQI based on a list of pollutants
+    def aqi(self, ccs, iaqis=False):
+        """Calculate the AQI based on a list of pollutants. Return an
+        AQI value, if `iaqis` is set to True, send back a tuple
+        containing the AQI and a dict of IAQIs.
 
         :param ccs: a list of tuples of pollutants concentrations with
                     pollutant constant and concentration as values
         :type ccs: list
+        :param iaqis: return IAQIs with result
+        :type iaqis: bool
         """
-        iaqis = []
+        _iaqis = {}
         for (elem, cc) in ccs:
-            iaqis.append(self.iaqi(elem, cc))
-        return max(iaqis)
+            _iaqis[elem] = self.iaqi(elem, cc)
+        _aqi = max(_iaqis.values())
+        if iaqis:
+            return (_aqi, _iaqis)
+        else:
+            return _aqi
 
 
 class PiecewiseAQI(BaseAQI):
