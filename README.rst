@@ -1,6 +1,6 @@
-===========================
+###########################
 python-aqi - AQI conversion
-===========================
+###########################
 
 A library to convert between AQI value and pollutant concentration
 (µg/m³ or ppm) using the following algorithms:
@@ -13,7 +13,7 @@ A library to convert between AQI value and pollutant concentration
 
 
 Install
--------
+=======
 
 ::
 
@@ -21,13 +21,15 @@ Install
 
 
 Usage
------
+=====
+
+Library
+-------
 
 Convert a pollutant to its IAQI (Intermediate Air Quality Index)::
 
     import aqi
     myaqi = aqi.to_iaqi(aqi.POLLUTANT_PM25, '12', algo=aqi.ALGO_EPA)
-
 
 Get an AQI out of several pollutant concentrations, default algorithm is EPA::
 
@@ -44,8 +46,42 @@ Convert an IAQI to its pollutant concentration::
     mycc = aqi.to_cc(aqi.POLLUTANT_PM25, '22', algo=aqi.ALGO_EPA)
 
 
+Command line
+------------
+
+List supported algorithmas and pollutants::
+
+    $ aqi -l
+    epa: pm25, pm10, o3_8h, o3_1h, co, so2, no2
+    mep: pm25, pm10, o3_8h, o3_1h, so2_24h, so2_1h, no2_24h, no2_1h, co_24h, co_1h
+
+Convert PM2.5 to IAQI using EPA algorithm::
+
+    $ aqi epa pm25:12
+    39
+
+Convert pollutants concentrations to AQI using EPA algorithm::
+
+    $ aqi epa pm25:12,pm10:24,o3_8h:0.087
+    129
+
+Convert pollutants concentrations to AQI using EPA algorithm, display IAQIs::
+
+    $ aqi -v epa pm25:12,pm10:24,o3_8h:0.087
+    pm25:12,pm10:24,o3_8h:0.087
+    129
+
+
+Test
+====
+
+Test the package::
+
+    $ python -m unittest discover
+
+
 Resource
---------
+========
 
 * EPA AQI: Technical Assistance Document for the Reporting of Daily Air
 * Quality – the Air Quality Index (AQI) (September 2012) found at http://www.epa.gov/airnow/aqi-technical-assistance-document-sep2012.pdf
@@ -55,7 +91,7 @@ Resource
     * HJ633-2012 (2012/02/29) found at http://www.zzemc.cn/em_aw/Content/HJ633-2012.pdf
 
 License
--------
+=======
 
 python-aqi is published under a BSD 3-clause license, see the LICENSE file
 distributed with the project.
