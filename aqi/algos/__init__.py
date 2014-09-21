@@ -21,10 +21,13 @@ def list_algos():
     pollutant
     """
     _algos = []
-    package = __import__('aqi.algos', fromlist=['aqi.algos'])
+    algos_pkg = 'aqi.algos'
+
+    package = __import__(algos_pkg, fromlist=[algos_pkg])
     for importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
         if ispkg is False and modname != 'base':
-            algo_pack = __import__('aqi.algos.' + modname, fromlist=['aqi.algos.' + modname])
-            _aqi = algo_pack.AQI()
-            _algos.append((modname, _aqi.list_pollutants()))
+            algo_mod = '.'.join([algos_pkg, modname])
+            mod = __import__(algo_mod, fromlist=[algo_mod])
+            _aqi = mod.AQI()
+            _algos.append((mod.__name__, _aqi.list_pollutants()))
     return _algos
