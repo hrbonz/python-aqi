@@ -10,8 +10,12 @@ A library to convert between AQI value and pollutant concentration
 
 .. image:: https://travis-ci.org/hrbonz/python-aqi.svg?branch=master
     :target: https://travis-ci.org/hrbonz/python-aqi
+    :alt: Testing Status
 
-`python-aqi on github <https://github.com/hrbonz/python-aqi>`_
+.. image:: https://readthedocs.org/projects/python-aqi/badge/?version=latest
+    :target: https://readthedocs.org/projects/python-aqi/?badge=latest
+    :alt: Documentation Status
+
 
 Install
 =======
@@ -81,6 +85,16 @@ Test the package::
     $ python -m unittest discover
 
 
+Project
+=======
+
+`Source code on github <https://github.com/hrbonz/python-aqi>`_
+
+`Documentation on readthedocs <http://python-aqi.readthedocs.org/>`_
+
+`Package on pypi <https://pypi.python.org/pypi/python-aqi>`_
+
+
 Resource
 ========
 
@@ -90,6 +104,7 @@ Resource
 
     * GB3095—2012 (2012/02/29) found at http://www.mep.gov.cn/gkml/hbb/bwj/201203/t20120302_224147.htm
     * HJ633-2012 (2012/02/29) found at http://www.zzemc.cn/em_aw/Content/HJ633-2012.pdf
+
 
 License
 =======
