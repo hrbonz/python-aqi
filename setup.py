@@ -12,7 +12,7 @@ long_description = open(os.path.join(here, 'README.rst')).read()
 
 setup(
     name='python-aqi',
-    version="v0.3",
+    version="v0.4",
     author="Stefan \"hr\" Berder",
     author_email="hr@bonz.org",
     license="BSD 3-Clause",
