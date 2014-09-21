@@ -95,8 +95,8 @@ Project
 `Package on pypi <https://pypi.python.org/pypi/python-aqi>`_
 
 
-Resource
-========
+Resources
+=========
 
 * EPA AQI: Technical Assistance Document for the Reporting of Daily Air
 * Quality – the Air Quality Index (AQI) (September 2012) found at http://www.epa.gov/airnow/aqi-technical-assistance-document-sep2012.pdf
