@@ -52,8 +52,8 @@ Command line
 List supported algorithms and pollutants::
 
     $ aqi -l
-    aqi.algos.epa: pm25, pm10, o3_8h, o3_1h, co, so2, no2
-    aqi.algos.mep: pm25, pm10, o3_8h, o3_1h, so2_24h, so2_1h, no2_24h, no2_1h, co_24h, co_1h
+    aqi.algos.epa: pm10 (µg/m³), o3_8h (ppm), co_8h (ppm), no2_1h (ppb), o3_1h (ppm), so2_1h (ppb), pm25 (µg/m³)
+    aqi.algos.mep: no2_24h (µg/m³), so2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), o3_1h (µg/m³), o3_8h (µg/m³), so2_1h (µg/m³), co_1h (mg/m³), pm25 (µg/m³), co_24h (mg/m³)
 
 Convert PM2.5 to IAQI using EPA algorithm::
 
@@ -62,13 +62,13 @@ Convert PM2.5 to IAQI using EPA algorithm::
 
 Convert pollutants concentrations to AQI using EPA algorithm::
 
-    $ aqi aqi.algos.epa pm25:40.9 o3_8h:0.077 co:8.4
+    $ aqi aqi.algos.epa pm25:40.9 o3_8h:0.077 co_1h:8.4
     104
 
 Convert pollutants concentrations to AQI using EPA algorithm, display IAQIs::
 
-    $ aqi -v aqi.algos.epa pm25:40.9 o3_8h:0.077 co:8.4
-    pm25:102 o3_8h:104 co:90
+    $ aqi -v aqi.algos.epa pm25:40.9 o3_8h:0.077 co_1h:8.4
+    pm25:102 o3_8h:104 co_1h:90
     104
 
 

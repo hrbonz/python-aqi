@@ -94,4 +94,13 @@ class AQI(PiecewiseAQI):
             POLLUTANT_SO2_1H: Decimal('1.'),
             POLLUTANT_NO2_1H: Decimal('1.'),
         },
+        'units': {
+            POLLUTANT_O3_8H: 'ppm',
+            POLLUTANT_O3_1H: 'ppm',
+            POLLUTANT_PM10: 'µg/m³',
+            POLLUTANT_PM25: 'µg/m³',
+            POLLUTANT_CO_8H: 'ppm',
+            POLLUTANT_SO2_1H: 'ppb',
+            POLLUTANT_NO2_1H: 'ppb',
+        },
     }

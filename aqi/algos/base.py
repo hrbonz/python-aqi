@@ -82,4 +82,4 @@ class PiecewiseAQI(BaseAQI):
         return value.quantize(Decimal('1.'), rounding=ROUND_HALF_EVEN)
 
     def list_pollutants(self):
-        return self.piecewise['bp'].keys()
+        return self.piecewise['units'].items()

@@ -71,8 +71,10 @@ def console_aqi():
     # list available algorithms
     if args.list is True:
         for _algo in list_algos():
-            print("{algo}: {elem}".format(algo=_algo[0],
-                                          elem=', '.join(_algo[1])))
+            print("{algo}: {elem}".format(
+                algo=_algo[0], elem=', '.join(
+                ["{0} ({1})".format(elem, unit) for (elem, unit) \
+                 in _algo[1]])))
     else:
         # if not listing but missing other positional argument
         if args.algo is None or args.measures is None:
