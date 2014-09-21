@@ -4,8 +4,8 @@ import argparse
 
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,
-                          POLLUTANT_CO, POLLUTANT_SO2, POLLUTANT_NO2,
-                          POLLUTANT_NAMES, ALGO_EPA, get_constant)
+                          POLLUTANT_CO_8H, POLLUTANT_SO2_1H,
+                          POLLUTANT_NO2_1H, ALGO_EPA)
 
 from aqi.algos import get_algo, list_algos
 
@@ -86,17 +86,14 @@ def console_aqi():
             sys.exit(1)
         ccs = []
         for measure in args.measures:
-            (name, cc) = measure.split(':')
-            constant = get_constant(name)
-            if constant is None:
-                continue
-            ccs.append((constant, cc))
+            (elem, cc) = measure.split(':')
+            ccs.append((elem, cc))
 
         ret = _aqi.aqi(ccs, iaqis=args.verbose)
         if args.verbose is True:
             iaqis = []
             for (constant, iaqi) in ret[1].items():
-                iaqis.append(POLLUTANT_NAMES[constant] + ':' + str(iaqi))
+                iaqis.append(constant + ':' + str(iaqi))
             sys.stdout.write(' '.join(iaqis) + "\n")
             sys.stdout.write(str(ret[0]) + "\n")
         else:

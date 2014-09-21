@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from decimal import *
-from aqi.constants import POLLUTANT_NAMES
 
 
 class BaseAQI(object):
@@ -34,7 +33,9 @@ class BaseAQI(object):
         """
         _iaqis = {}
         for (elem, cc) in ccs:
-            _iaqis[elem] = self.iaqi(elem, cc)
+            _iaqi = self.iaqi(elem, cc)
+            if _iaqi is not None:
+                _iaqis[elem] = _iaqi
         _aqi = max(_iaqis.values())
         if iaqis:
             return (_aqi, _iaqis)
@@ -56,8 +57,9 @@ class PiecewiseAQI(BaseAQI):
     def iaqi(self, elem, cc):
         if self.piecewise is None:
             raise NameError("piecewise_struct is not defined")
+        if elem not in self.piecewise['bp'].keys():
+            return None
 
-        #getcontext().rounding = ROUND_DOWN
         _cc = Decimal(cc).quantize(self.piecewise['prec'][elem],
                                    rounding=ROUND_DOWN)
 
@@ -80,7 +82,4 @@ class PiecewiseAQI(BaseAQI):
         return value.quantize(Decimal('1.'), rounding=ROUND_HALF_EVEN)
 
     def list_pollutants(self):
-        ret = []
-        for bp in self.piecewise['bp'].keys():
-            ret.append(POLLUTANT_NAMES[bp])
-        return ret
+        return self.piecewise['bp'].keys()

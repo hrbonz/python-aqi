@@ -5,7 +5,8 @@ import unittest
 from aqi.algos.epa import AQI
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,
-                          POLLUTANT_CO, POLLUTANT_SO2, POLLUTANT_NO2)
+                          POLLUTANT_CO_8H, POLLUTANT_SO2_1H,
+                          POLLUTANT_NO2_1H)
 
 
 class TestEPA(unittest.TestCase):
@@ -33,7 +34,7 @@ class TestEPA(unittest.TestCase):
             myaqi.aqi([
                 (POLLUTANT_O3_8H, '0.077'),
                 (POLLUTANT_PM25, '40.9'),
-                (POLLUTANT_CO, '8.4')
+                (POLLUTANT_CO_8H, '8.4')
             ]),
             104)
 

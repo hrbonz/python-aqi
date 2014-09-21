@@ -22,7 +22,7 @@ class TestAqi(unittest.TestCase):
             aqi.to_aqi([
                 (aqi.POLLUTANT_O3_8H, '0.077'),
                 (aqi.POLLUTANT_PM25, '40.9'),
-                (aqi.POLLUTANT_CO, '8.4')
+                (aqi.POLLUTANT_CO_8H, '8.4')
             ],
             algo=aqi.ALGO_EPA),
             104)

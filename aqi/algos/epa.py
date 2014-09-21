@@ -4,7 +4,8 @@ from decimal import *
 
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,
-                          POLLUTANT_CO, POLLUTANT_SO2, POLLUTANT_NO2)
+                          POLLUTANT_CO_8H, POLLUTANT_SO2_1H,
+                          POLLUTANT_NO2_1H)
 from aqi.algos.base import PiecewiseAQI
 
 
@@ -56,7 +57,7 @@ class AQI(PiecewiseAQI):
                 (Decimal('250.5'), Decimal('350.4')),
                 (Decimal('350.5'), Decimal('500.4')),
             ],
-            POLLUTANT_CO: [
+            POLLUTANT_CO_8H: [
                 (Decimal('0.0'), Decimal('4.4')),
                 (Decimal('4.5'), Decimal('9.4')),
                 (Decimal('9.5'), Decimal('12.4')),
@@ -65,7 +66,7 @@ class AQI(PiecewiseAQI):
                 (Decimal('30.5'), Decimal('40.4')),
                 (Decimal('40.5'), Decimal('50.4')),
             ],
-            POLLUTANT_SO2: [
+            POLLUTANT_SO2_1H: [
                 (Decimal('0'), Decimal('35')),
                 (Decimal('36'), Decimal('75')),
                 (Decimal('76'), Decimal('185')),
@@ -74,7 +75,7 @@ class AQI(PiecewiseAQI):
                 (Decimal('605'), Decimal('804')),
                 (Decimal('805'), Decimal('1004')),
             ],
-            POLLUTANT_NO2: [
+            POLLUTANT_NO2_1H: [
                 (Decimal('0'), Decimal('53')),
                 (Decimal('54'), Decimal('100')),
                 (Decimal('101'), Decimal('360')),
@@ -89,8 +90,8 @@ class AQI(PiecewiseAQI):
             POLLUTANT_O3_1H: Decimal('.001'),
             POLLUTANT_PM10: Decimal('1.'),
             POLLUTANT_PM25: Decimal('.1'),
-            POLLUTANT_CO: Decimal('.1'),
-            POLLUTANT_SO2: Decimal('1.'),
-            POLLUTANT_NO2: Decimal('1.'),
+            POLLUTANT_CO_8H: Decimal('.1'),
+            POLLUTANT_SO2_1H: Decimal('1.'),
+            POLLUTANT_NO2_1H: Decimal('1.'),
         },
     }
