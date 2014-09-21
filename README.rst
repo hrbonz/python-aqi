@@ -57,7 +57,7 @@ List supported algorithms and pollutants::
 
 Convert PM2.5 to IAQI using EPA algorithm::
 
-    $ aqi epa pm25:12
+    $ aqi aqi.algos.epa pm25:12
     39
 
 Convert pollutants concentrations to AQI using EPA algorithm::
