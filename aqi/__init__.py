@@ -5,7 +5,7 @@ import argparse
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,
                           POLLUTANT_CO, POLLUTANT_SO2, POLLUTANT_NO2,
-                          ALGO_EPA)
+                          POLLUTANT_NAMES, ALGO_EPA, get_constant)
 
 from aqi.algos import get_algo, list_algos
 
@@ -57,13 +57,50 @@ def console_aqi():
     parser.add_argument('-l', action='store_true', dest='list',
                         help='list the available algorithms and '
                              'corresponding pollutants')
+    parser.add_argument('-v', action='store_true', dest='verbose',
+                        help='add IAQIs to the result')
+    parser.add_argument('algo', nargs='?',
+                        help='the formula to use for the AQI '
+                             'calculation, use the python module path')
+    parser.add_argument('measures', nargs='*', metavar='measure',
+                        help='pollutant measure, format is '
+                             'element_name:concentration. Unknown '
+                             'pollutants are silently ignored.')
     args = parser.parse_args()
 
+    # list available algorithms
     if args.list is True:
         for _algo in list_algos():
             print("{algo}: {elem}".format(algo=_algo[0],
                                           elem=', '.join(_algo[1])))
-        sys.exit(0)
+    else:
+        # if not listing but missing other positional argument
+        if args.algo is None or args.measures is None:
+            sys.stderr.write("Missing algorithm or measure.\n")
+            sys.exit(1)
+        _aqi = get_algo(args.algo)
+        # couln't load the algo module or instanciate AQI class
+        if _aqi is None:
+            sys.stderr.write("Unknown algorithm or module is missing an "
+                             "AQI class\n")
+            sys.exit(1)
+        ccs = []
+        for measure in args.measures:
+            (name, cc) = measure.split(':')
+            constant = get_constant(name)
+            if constant is None:
+                continue
+            ccs.append((constant, cc))
 
-    # end the script wihtout any argument
+        ret = _aqi.aqi(ccs, iaqis=args.verbose)
+        if args.verbose is True:
+            iaqis = []
+            for (constant, iaqi) in ret[1].items():
+                iaqis.append(POLLUTANT_NAMES[constant] + ':' + str(iaqi))
+            sys.stdout.write(' '.join(iaqis) + "\n")
+            sys.stdout.write(str(ret[0]) + "\n")
+        else:
+            sys.stdout.write(str(ret) + "\n")
+
+    # end the script without a problem
     sys.exit(0)

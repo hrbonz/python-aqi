@@ -21,4 +21,11 @@ POLLUTANT_NAMES = {
 
 # constants for algorithms, canonical module name
 ALGO_EPA = 'aqi.algos.epa'
-ALGO_MEP = 'aqi.algos.mep'
+
+def get_constant(name):
+    """Get a pollutant constant based on its name, return a constant or
+    None if the pollutant is unknown"""
+    for (idx, _name) in POLLUTANT_NAMES.items():
+        if name == _name:
+            return idx
+    return None
