@@ -79,12 +79,14 @@ def console_aqi():
         # if not listing but missing other positional argument
         if args.algo is None or args.measures is None:
             sys.stderr.write("Missing algorithm or measure.\n")
+            parser.print_help()
             sys.exit(1)
         _aqi = get_algo(args.algo)
         # couln't load the algo module or instanciate AQI class
         if _aqi is None:
             sys.stderr.write("Unknown algorithm or module is missing an "
                              "AQI class\n")
+            parser.print_help()
             sys.exit(1)
         ccs = []
         for measure in args.measures:
