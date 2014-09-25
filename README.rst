@@ -16,6 +16,10 @@ A library to convert between AQI value and pollutant concentration
     :target: https://readthedocs.org/projects/python-aqi/?badge=latest
     :alt: Documentation Status
 
+.. image:: http://img.shields.io/badge/license-BSD%203--Clause-blue.svg
+    :target: http://opensource.org/licenses/BSD-3-Clause
+    :alt: license BSD 3-Clause
+
 
 Install
 =======
