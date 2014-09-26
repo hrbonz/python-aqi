@@ -12,7 +12,7 @@ from aqi.algos import get_algo, list_algos
 __author__ = "Stefan \"hr\" Berder"
 __contact__ = "hr@bonz.org"
 __license__ = "BSD 3-Clause"
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 
 def to_iaqi(elem, cc, algo=ALGO_EPA):
