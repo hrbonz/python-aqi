@@ -97,8 +97,8 @@ Test the package::
     $ python -m unittest discover
 
 
-Releasing
-=========
+Release
+=======
 
 Use `bumpr` to release the package::
 
