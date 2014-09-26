@@ -108,11 +108,9 @@ Use `bumpr` to release the package::
 Project
 =======
 
-`Source code on github <https://github.com/hrbonz/python-aqi>`_
-
-`Documentation on readthedocs <http://python-aqi.readthedocs.org/>`_
-
-`Package on pypi <https://pypi.python.org/pypi/python-aqi>`_
+* `Source code on github <https://github.com/hrbonz/python-aqi>`_
+* `Documentation on readthedocs <http://python-aqi.readthedocs.org/>`_
+* `Package on pypi <https://pypi.python.org/pypi/python-aqi>`_
 
 
 Resources
