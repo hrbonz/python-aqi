@@ -81,12 +81,28 @@ Convert pollutants concentrations to AQI using EPA algorithm, display IAQIs::
     104
 
 
+Development
+===========
+
+To install the development environment::
+
+    $ pip install -r dev_requirements.txt
+
+
 Test
 ====
 
 Test the package::
 
     $ python -m unittest discover
+
+
+Releasing
+=========
+
+Use `bumpr` to release the package::
+
+    $ bumpr -b -m
 
 
 Project
