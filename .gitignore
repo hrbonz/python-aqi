@@ -5,3 +5,5 @@ dev_aqi.py
 
 docs/_build/
 docs/_static/
+
+.tox
