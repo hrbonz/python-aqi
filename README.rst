@@ -96,6 +96,10 @@ Test the package::
 
     $ python -m unittest discover
 
+Automatic testing in various environments::
+
+    $ tox
+
 
 Release
 =======
