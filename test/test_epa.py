@@ -31,9 +31,18 @@ class TestEPA(unittest.TestCase):
         """Test O3, PM2.5 and CO AQI"""
         myaqi = AQI()
         self.assertEqual(
+            myaqi.iaqi(POLLUTANT_O3_8H, '0.077')
+            , 104)
+        self.assertEqual(
+            myaqi.iaqi(POLLUTANT_PM25, '35.9')
+            , 102)
+        self.assertEqual(
+            myaqi.iaqi(POLLUTANT_CO_8H, '8.4'),
+            90)
+        self.assertEqual(
             myaqi.aqi([
                 (POLLUTANT_O3_8H, '0.077'),
-                (POLLUTANT_PM25, '40.9'),
+                (POLLUTANT_PM25, '35.9'),
                 (POLLUTANT_CO_8H, '8.4')
             ]),
             104)
