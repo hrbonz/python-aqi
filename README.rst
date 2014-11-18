@@ -121,7 +121,8 @@ Resources
 =========
 
 * EPA AQI: Technical Assistance Document for the Reporting of Daily Air
-* Quality – the Air Quality Index (AQI) (September 2012) found at http://www.epa.gov/airnow/aqi-technical-assistance-document-sep2012.pdf
+  Quality – the Air Quality Index (AQI) December 2013) found at http://www.epa.gov/airnow/aqi-technical-assistance-document-dec2013.pdf
+* National Ambient Air Quality Standards for Particulate Matter found at http://www.gpo.gov/fdsys/pkg/FR-2013-01-15/pdf/2012-30946.pdf
 * MEP AQI:
 
     * GB3095—2012 (2012/02/29) found at http://www.mep.gov.cn/gkml/hbb/bwj/201203/t20120302_224147.htm
