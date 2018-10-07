@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pkgutil
+import importlib
 
 
 def get_algo(algo_mod):
@@ -28,11 +29,11 @@ def list_algos():
     _algos = []
     algos_pkg = 'aqi.algos'
 
-    package = __import__(algos_pkg, fromlist=[algos_pkg])
+    package = importlib.import_module(algos_pkg)
     for importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
         if ispkg is False and modname != 'base':
             algo_mod = '.'.join([algos_pkg, modname])
-            mod = __import__(algo_mod, fromlist=[algo_mod])
+            mod = importlib.import_module(algo_mod)
             _aqi = mod.AQI()
             _algos.append((mod.__name__, _aqi.list_pollutants()))
     return _algos
