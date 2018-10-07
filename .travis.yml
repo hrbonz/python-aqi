@@ -14,3 +14,4 @@ install:
     - python setup.py develop
 script:
     - python -m unittest discover
+    - aqi -l
