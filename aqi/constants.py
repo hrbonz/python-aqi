@@ -16,3 +16,4 @@ POLLUTANT_NO2_24H = 'no2_24h'
 # constants for algorithms, canonical module name
 ALGO_EPA = 'aqi.algos.epa'
 ALGO_MEP = 'aqi.algos.mep'
+ALGO_CAQI = 'aqi.algos.caqi'
