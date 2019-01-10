@@ -45,7 +45,7 @@ def to_aqi(ccs, algo=ALGO_EPA):
     return _aqi.aqi(ccs)
 
 def to_cc(elem, iaqi, algo=ALGO_EPA):
-    """Calculate a concentration for a given pollutant. Return the
+    """Calculate a concentration for a given pollutant.
 
     .. warning:: the intermediate AQI is passed as a string
 
@@ -57,7 +57,7 @@ def to_cc(elem, iaqi, algo=ALGO_EPA):
     :type algo: str
     """
     _aqi = get_algo(algo)
-    return _aqi.iaqi(elem, cc)
+    return _aqi.cc(elem, iaqi)
 
 def console_aqi():
     """Console entry point, this function is used as an entry point to
