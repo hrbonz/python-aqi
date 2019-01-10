@@ -44,8 +44,23 @@ def to_aqi(ccs, algo=ALGO_EPA):
     _aqi = get_algo(algo)
     return _aqi.aqi(ccs)
 
+def to_cc(elem, iaqi, algo=ALGO_EPA):
+    """Calculate a concentration for a given pollutant. Return the
+
+    .. warning:: the intermediate AQI is passed as a string
+
+    :param elem: pollutant constant
+    :type elem: int
+    :param cc: intermediate AQI
+    :type iaqi: str
+    :param algo: algorithm module canonical name
+    :type algo: str
+    """
+    _aqi = get_algo(algo)
+    return _aqi.iaqi(elem, cc)
+
 def console_aqi():
-    """Console entry point, this functionis used as an entry point to
+    """Console entry point, this function is used as an entry point to
     the 'aqi' command.
     """
     import sys
@@ -54,6 +69,8 @@ def console_aqi():
     parser = argparse.ArgumentParser(description=
     """Convert between AQI value and pollutant concentration (µg/m³ or
     ppm).""")
+    parser.add_argument('-c', dest='conv', choices=['aqi', 'cc'], default='aqi',
+                        help="Conversion to perform, defaults to 'aqi'")
     parser.add_argument('-l', action='store_true', dest='list',
                         help='list the available algorithms and '
                              'corresponding pollutants')
@@ -88,20 +105,40 @@ def console_aqi():
                              "AQI class\n")
             parser.print_help()
             sys.exit(1)
-        ccs = []
-        for measure in args.measures:
-            (elem, cc) = measure.split(':')
-            ccs.append((elem, cc))
+        if args.conv == 'aqi':
+            ccs = []
+            for measure in args.measures:
+                (elem, cc) = measure.split(':')
+                ccs.append((elem, cc))
 
-        ret = _aqi.aqi(ccs, iaqis=args.verbose)
-        if args.verbose is True:
-            iaqis = []
-            for (constant, iaqi) in ret[1].items():
-                iaqis.append(constant + ':' + str(iaqi))
-            sys.stdout.write(' '.join(iaqis) + "\n")
-            sys.stdout.write(str(ret[0]) + "\n")
+            ret = _aqi.aqi(ccs, iaqis=args.verbose)
+            if args.verbose is True:
+                iaqis = []
+                for (constant, iaqi) in ret[1].items():
+                    iaqis.append(constant + ':' + str(iaqi))
+                sys.stdout.write(' '.join(iaqis) + "\n")
+                sys.stdout.write(str(ret[0]) + "\n")
+            else:
+                sys.stdout.write(str(ret) + "\n")
         else:
-            sys.stdout.write(str(ret) + "\n")
+            iaqis = []
+            for measure in args.measures:
+                (elem, iaqi) = measure.split(':')
+                iaqis.append((elem, iaqi))
+
+            ret = []
+            for iaqi in iaqis:
+                ret.append((iaqi[0], _aqi.cc(iaqi[0], iaqi[1])))
+            if len(ret) == 1:
+                sys.stdout.write(str(ret[0][1]) + "\n")
+            elif len(ret) > 1:
+                ccs = []
+                for (elem, cc) in ret:
+                    if cc is None:
+                        ccs.append(elem + ':na')
+                    else:
+                        ccs.append(elem + ':' + str(cc))
+                sys.stdout.write('\n'.join(ccs) + "\n")
 
     # end the script without a problem
     sys.exit(0)

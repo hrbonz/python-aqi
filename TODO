@@ -1,3 +1,0 @@
-* add AQI to concentration conversion
-* add exception if concentration / AQI is out of scale
-* generate content for readthedocs

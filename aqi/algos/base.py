@@ -42,6 +42,19 @@ class BaseAQI(object):
         else:
             return _aqi
 
+    def cc(self, elem, iaqi):
+        """Calculate a concentration for a given pollutant. Return the
+        concentration for the given pollutant based on the intermediate AQI.
+
+        .. warning:: the intermediate AQI is passed as a string
+
+        :param elem: pollutant constant
+        :type elem: int
+        :param cc: intermediate AQI
+        :type cc: str
+        """
+        raise NotImplementedError
+
     def list_pollutants(self):
         """List pollutants covered by an algorithm, return a list of
         pollutant names.
@@ -56,7 +69,7 @@ class PiecewiseAQI(BaseAQI):
 
     def iaqi(self, elem, cc):
         if self.piecewise is None:
-            raise NameError("piecewise_struct is not defined")
+            raise NameError("piecewise struct is not defined")
         if elem not in self.piecewise['bp'].keys():
             return None
 
@@ -80,6 +93,34 @@ class PiecewiseAQI(BaseAQI):
         # equation
         value = (aqihi - aqilo) / (bphi - bplo) * (_cc - bplo) + aqilo
         return value.quantize(Decimal('1.'), rounding=ROUND_HALF_EVEN)
+
+
+    def cc(self, elem, iaqi):
+        if self.piecewise is None:
+            raise NameError("piecewise struct is not defined")
+        if elem not in self.piecewise['bp'].keys():
+            return None
+
+        _iaqi = int(iaqi)
+
+        # define aqi breakpoints for this pollutant at this IAQI
+        bps = self.piecewise['aqi']
+        bplo = None
+        bphi = None
+        idx = 0
+        for bp in bps:
+            if _iaqi >= bp[0] and _iaqi <= bp[1]:
+                bplo = bp[0]
+                bphi = bp[1]
+                break
+            idx += 1
+        # get corresponding concentration boundaries
+        (cclo, cchi) = self.piecewise['bp'][elem][idx]
+
+        # equation
+        value = (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo
+        return Decimal(value).quantize(self.piecewise['prec'][elem],
+                                   rounding=ROUND_DOWN)
 
     def list_pollutants(self):
         return self.piecewise['units'].items()
