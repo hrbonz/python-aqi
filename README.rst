@@ -12,7 +12,7 @@ A library to convert between AQI value and pollutant concentration
     :target: https://travis-ci.org/hrbonz/python-aqi
     :alt: Testing Status
 
-.. image:: https://readthedocs.org/projects/python-aqi/badge/?version=0.6.0
+.. image:: https://readthedocs.org/projects/python-aqi/badge/?version=0.6.1
     :target: https://readthedocs.org/projects/python-aqi/?badge=latest
     :alt: Documentation Status
 
