@@ -1,10 +1,17 @@
 language: python
 python:
+    - "3.6"
+    - "3.5"
     - "3.4"
     - "3.3"
     - "3.2"
     - "2.7"
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
 install:
     - python setup.py develop
 script:
     - python -m unittest discover
+    - aqi -l
