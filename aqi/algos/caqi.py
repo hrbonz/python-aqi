@@ -9,7 +9,7 @@ from aqi.algos.base import PiecewiseAQI
 
 
 class AQI(PiecewiseAQI):
-    """Implementation of the EPA AQI algorithm.
+    """Implementation of the CAQI algorithm.
     """
 
     piecewise = {
