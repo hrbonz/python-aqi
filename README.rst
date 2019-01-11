@@ -7,6 +7,7 @@ A library to convert between AQI value and pollutant concentration
 
 * United States Environmental Protection Agency (EPA)
 * China Ministry of Environmental Protection (MEP)
+* European Common Air Quality Index  (CAQI)
 
 .. image:: https://travis-ci.org/hrbonz/python-aqi.svg?branch=master
     :target: https://travis-ci.org/hrbonz/python-aqi
@@ -128,6 +129,7 @@ Resources
     * GB3095—2012 (2012/02/29) found at http://www.mep.gov.cn/gkml/hbb/bwj/201203/t20120302_224147.htm
     * HJ633-2012 (2012/02/29) found at http://www.zzemc.cn/em_aw/Content/HJ633-2012.pdf
 
+* CAQI: CAQI Air quality index https://www.airqualitynow.eu/download/CITEAIR-Comparing_Urban_Air_Quality_across_Borders.pdf
 
 License
 =======
