@@ -5,7 +5,8 @@ import argparse
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,
                           POLLUTANT_CO_8H, POLLUTANT_SO2_1H,
-                          POLLUTANT_NO2_1H, ALGO_EPA, ALGO_MEP)
+                          POLLUTANT_NO2_1H, ALGO_EPA, ALGO_MEP,
+                          ALGO_CAQI)
 
 from aqi.algos import get_algo, list_algos
 
