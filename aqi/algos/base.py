@@ -76,8 +76,14 @@ class PiecewiseAQI(BaseAQI):
         _cc = Decimal(cc).quantize(self.piecewise['prec'][elem],
                                    rounding=ROUND_DOWN)
 
-        # define breakpoints for this pollutant at this contentration
+        # define breakpoints for this pollutant at this concentration
         bps = self.piecewise['bp'][elem]
+        bplo_min = bps[0][0]
+        if _cc < bplo_min:
+            return Decimal(self.piecewise['aqi'][0][0])
+        bphi_max = bps[-1][1]
+        if _cc > bphi_max:
+            return Decimal(self.piecewise['aqi'][-1][1])
         bplo = None
         bphi = None
         idx = 0
