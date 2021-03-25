@@ -24,7 +24,7 @@ def to_iaqi(elem, cc, algo=ALGO_EPA):
 
     :param elem: pollutant constant
     :type elem: int
-    :param cc: pollutant contentration (µg/m³ or ppm)
+    :param cc: pollutant concentration (µg/m³ or ppm)
     :type cc: str
     :param algo: algorithm module canonical name
     :type algo: str
