@@ -15,7 +15,7 @@ class BaseAQI(object):
 
         :param elem: pollutant constant
         :type elem: int
-        :param cc: pollutant contentration (µg/m³ or ppm)
+        :param cc: pollutant concentration (µg/m³ or ppm)
         :type cc: str
         """
         raise NotImplementedError
@@ -76,7 +76,7 @@ class PiecewiseAQI(BaseAQI):
         _cc = Decimal(cc).quantize(self.piecewise['prec'][elem],
                                    rounding=ROUND_DOWN)
 
-        # define breakpoints for this pollutant at this contentration
+        # define breakpoints for this pollutant at this concentration
         bps = self.piecewise['bp'][elem]
         bplo = None
         bphi = None
