@@ -24,11 +24,11 @@ class AQI(PiecewiseAQI):
             (401, 500)],
         'bp': {
             POLLUTANT_O3_8H: [
-                (Decimal('0.000'), Decimal('0.059')),
-                (Decimal('0.060'), Decimal('0.075')),
-                (Decimal('0.076'), Decimal('0.095')),
-                (Decimal('0.096'), Decimal('0.115')),
-                (Decimal('0.116'), Decimal('0.374')),
+                (Decimal('0.000'), Decimal('0.054')),
+                (Decimal('0.055'), Decimal('0.070')),
+                (Decimal('0.071'), Decimal('0.085')),
+                (Decimal('0.086'), Decimal('0.105')),
+                (Decimal('0.106'), Decimal('0.200')),
             ],
             POLLUTANT_O3_1H: [
                 (0, 0),
