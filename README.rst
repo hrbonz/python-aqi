@@ -131,7 +131,7 @@ Resources
 =========
 
 * EPA AQI: Technical Assistance Document for the Reporting of Daily Air
-  Quality – the Air Quality Index (AQI) December 2013) found at http://www.epa.gov/airnow/aqi-technical-assistance-document-dec2013.pdf
+  Quality – the Air Quality Index (AQI) December 2018) found at https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf
 * National Ambient Air Quality Standards for Particulate Matter found at http://www.gpo.gov/fdsys/pkg/FR-2013-01-15/pdf/2012-30946.pdf
 * MEP AQI:
 
