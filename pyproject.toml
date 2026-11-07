@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-aqi"
+dynamic = ["version"]
+description = "A library to convert between AQI value and pollutant concentration (µg/m³ or ppm)"
+readme = "README.rst"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = 'Stefan "hr" Berder', email = "hr@bonz.org" }]
+keywords = ["air quality", "pm2.5", "EPA", "MEP"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/hrbonz/python-aqi"
+Documentation = "https://python-aqi.readthedocs.io/"
+
+[project.scripts]
+aqi = "aqi:console_aqi"
+
+[dependency-groups]
+dev = ["coverage", "hatch", "pre-commit", "ruff"]
+
+[tool.hatch.version]
+path = "aqi/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["aqi", "tests", "test", "docs", "README.rst", "LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["aqi"]

@@ -7,3 +7,9 @@ docs/_build/
 docs/_static/
 
 .tox
+
+# editors and bytecode
+*.sw[po]
+__pycache__/
+*.pyc
+.venv/
