@@ -8,11 +8,11 @@ A library to convert between AQI value and pollutant concentration
 * United States Environmental Protection Agency (EPA)
 * China Ministry of Environmental Protection (MEP)
 
-.. image:: https://travis-ci.org/hrbonz/python-aqi.svg?branch=master
-    :target: https://travis-ci.org/hrbonz/python-aqi
+.. image:: https://github.com/hrbonz/python-aqi/actions/workflows/ci.yml/badge.svg?branch=master
+    :target: https://github.com/hrbonz/python-aqi/actions/workflows/ci.yml
     :alt: Testing Status
 
-.. image:: https://readthedocs.org/projects/python-aqi/badge/?version=0.6.1
+.. image:: https://readthedocs.org/projects/python-aqi/badge/?version=latest
     :target: https://readthedocs.org/projects/python-aqi/?badge=latest
     :alt: Documentation Status
 
@@ -117,9 +117,8 @@ Test the package::
 
     $ uv run python -m unittest discover
 
-Automatic testing in various environments::
-
-    $ tox
+The same checks and the tests on Python 3.9 to 3.14 run on GitHub Actions
+(``.github/workflows/ci.yml``) for each push and pull request.
 
 
 Release
@@ -134,7 +133,7 @@ Project
 =======
 
 * `Source code on github <https://github.com/hrbonz/python-aqi>`_
-* `Documentation on readthedocs <http://python-aqi.readthedocs.org/>`_
+* `Documentation on readthedocs <https://python-aqi.readthedocs.io/>`_
 * `Package on pypi <https://pypi.python.org/pypi/python-aqi>`_
 
 

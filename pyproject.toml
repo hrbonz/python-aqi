@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = []
 
@@ -35,6 +36,7 @@ aqi = "aqi:console_aqi"
 
 [dependency-groups]
 dev = ["coverage", "hatch", "pre-commit", "ruff"]
+docs = ["sphinx"]
 
 [tool.hatch.version]
 path = "aqi/__init__.py"
