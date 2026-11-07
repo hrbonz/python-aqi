@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from decimal import *
+from decimal import ROUND_DOWN, ROUND_HALF_EVEN, Decimal
 
 
 class BaseAQI(object):

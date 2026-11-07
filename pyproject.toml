@@ -40,7 +40,7 @@ dev = ["coverage", "hatch", "pre-commit", "ruff"]
 path = "aqi/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = ["aqi", "tests", "test", "docs", "README.rst", "LICENSE"]
+include = ["aqi", "tests", "docs", "README.rst", "LICENSE"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["aqi"]

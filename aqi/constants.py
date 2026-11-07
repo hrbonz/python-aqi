@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # constants for pollutants names
 POLLUTANT_O3_8H = 'o3_8h'
 POLLUTANT_O3_1H = 'o3_1h'

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # python-aqi documentation build configuration file, created by
 # sphinx-quickstart on Sun Sep 21 13:55:04 2014.

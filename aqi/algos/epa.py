@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from decimal import *
+from decimal import Decimal
 
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
                           POLLUTANT_O3_8H, POLLUTANT_O3_1H,

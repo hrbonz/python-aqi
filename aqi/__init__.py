@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import argparse
 
 from aqi.constants import (POLLUTANT_PM25, POLLUTANT_PM10,
