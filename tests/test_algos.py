@@ -12,8 +12,7 @@ class TestAlgos(unittest.TestCase):
 
     def test_get_algo(self):
         """Test algo loading"""
-        self.assertIsNone(
-            aqi.algos.get_algo('qwertyuiop'))
+        self.assertIsNone(aqi.algos.get_algo("qwertyuiop"))
         self.assertIsInstance(
-            aqi.algos.get_algo(aqi.constants.ALGO_EPA),
-            aqi.algos.epa.AQI)
+            aqi.algos.get_algo(aqi.constants.ALGO_EPA), aqi.algos.epa.AQI
+        )

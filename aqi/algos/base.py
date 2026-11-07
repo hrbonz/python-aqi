@@ -1,7 +1,7 @@
 from decimal import ROUND_DOWN, ROUND_HALF_EVEN, Decimal
 
 
-class BaseAQI(object):
+class BaseAQI:
     """A generic AQI class"""
 
     def iaqi(self, elem, cc):
@@ -30,7 +30,7 @@ class BaseAQI(object):
         :type iaqis: bool
         """
         _iaqis = {}
-        for (elem, cc) in ccs:
+        for elem, cc in ccs:
             _iaqi = self.iaqi(elem, cc)
             if _iaqi is not None:
                 _iaqis[elem] = _iaqi
@@ -68,14 +68,13 @@ class PiecewiseAQI(BaseAQI):
     def iaqi(self, elem, cc):
         if self.piecewise is None:
             raise NameError("piecewise struct is not defined")
-        if elem not in self.piecewise['bp'].keys():
+        if elem not in self.piecewise["bp"].keys():
             return None
 
-        _cc = Decimal(cc).quantize(self.piecewise['prec'][elem],
-                                   rounding=ROUND_DOWN)
+        _cc = Decimal(cc).quantize(self.piecewise["prec"][elem], rounding=ROUND_DOWN)
 
         # define breakpoints for this pollutant at this contentration
-        bps = self.piecewise['bp'][elem]
+        bps = self.piecewise["bp"][elem]
         bplo = None
         bphi = None
         idx = 0
@@ -86,23 +85,22 @@ class PiecewiseAQI(BaseAQI):
                 break
             idx += 1
         # get corresponding AQI boundaries
-        (aqilo, aqihi) = self.piecewise['aqi'][idx]
+        (aqilo, aqihi) = self.piecewise["aqi"][idx]
 
         # equation
         value = (aqihi - aqilo) / (bphi - bplo) * (_cc - bplo) + aqilo
-        return value.quantize(Decimal('1.'), rounding=ROUND_HALF_EVEN)
-
+        return value.quantize(Decimal("1."), rounding=ROUND_HALF_EVEN)
 
     def cc(self, elem, iaqi):
         if self.piecewise is None:
             raise NameError("piecewise struct is not defined")
-        if elem not in self.piecewise['bp'].keys():
+        if elem not in self.piecewise["bp"].keys():
             return None
 
         _iaqi = int(iaqi)
 
         # define aqi breakpoints for this pollutant at this IAQI
-        bps = self.piecewise['aqi']
+        bps = self.piecewise["aqi"]
         bplo = None
         bphi = None
         idx = 0
@@ -113,12 +111,13 @@ class PiecewiseAQI(BaseAQI):
                 break
             idx += 1
         # get corresponding concentration boundaries
-        (cclo, cchi) = self.piecewise['bp'][elem][idx]
+        (cclo, cchi) = self.piecewise["bp"][elem][idx]
 
         # equation
         value = (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo
-        return Decimal(value).quantize(self.piecewise['prec'][elem],
-                                   rounding=ROUND_DOWN)
+        return Decimal(value).quantize(
+            self.piecewise["prec"][elem], rounding=ROUND_DOWN
+        )
 
     def list_pollutants(self):
-        return self.piecewise['units'].items()
+        return self.piecewise["units"].items()

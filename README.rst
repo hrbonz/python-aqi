@@ -102,9 +102,20 @@ To install the development environment::
 Test
 ====
 
+Set up the development environment (ruff, pre-commit, hatch, coverage)::
+
+    $ uv sync
+    $ uv run pre-commit install
+
+Code is linted and formatted with `ruff <https://docs.astral.sh/ruff/>`_
+through `pre-commit <https://pre-commit.com/>`_, the checks run on each
+commit. To run them on all files::
+
+    $ uv run pre-commit run --all-files
+
 Test the package::
 
-    $ python -m unittest discover
+    $ uv run python -m unittest discover
 
 Automatic testing in various environments::
 

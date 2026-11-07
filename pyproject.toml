@@ -44,3 +44,11 @@ include = ["aqi", "tests", "docs", "README.rst", "LICENSE"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["aqi"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+extend-exclude = ["docs/conf.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
