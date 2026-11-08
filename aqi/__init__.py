@@ -19,7 +19,8 @@ from aqi.constants import (
     POLLUTANT_SO2_1H,
     POLLUTANT_SO2_24H,
 )
-from aqi.exceptions import NotApplicableError, OutOfRangeError
+from aqi.exceptions import InsufficientDataError, NotApplicableError, OutOfRangeError
+from aqi.nowcast import nowcast
 
 __author__ = 'Stefan "hr" Berder'
 __contact__ = "hr@bonz.org"
@@ -35,6 +36,7 @@ __all__ = [
     "ALGO_MEP",
     "ALGO_MEP_2012",
     "ALGO_MEP_2026",
+    "InsufficientDataError",
     "NotApplicableError",
     "OutOfRangeError",
     "POLLUTANT_CO_1H",
@@ -55,6 +57,8 @@ __all__ = [
     "to_aqi",
     "to_cc",
     "to_iaqi",
+    "to_nowcast",
+    "to_nowcast_aqi",
 ]
 
 
@@ -126,6 +130,67 @@ def to_cc(elem, iaqi, algo=ALGO_EPA, extrapolate=False):
     """
     _aqi = _load_algo(algo)
     return _aqi.cc(elem, iaqi, extrapolate=extrapolate)
+
+
+def to_nowcast(elem, hourly, hours=12, min_weight="0.5"):
+    """Calculate the NowCast concentration of PM2.5 or PM10 from hourly
+    readings, see :func:`aqi.nowcast.nowcast`.
+
+    :param elem: ``POLLUTANT_PM25`` or ``POLLUTANT_PM10``
+    :type elem: str
+    :param hourly: concentrations as strings (µg/m³), oldest first, the last
+                   one is the current hour, ``None`` for a missing hour
+    :type hourly: list
+    :param hours: length of the window, 12 in the standard, at least 3
+    :type hours: int
+    :param min_weight: lower limit of the weight factor, 0.5 in the standard
+                       (a string between 0 and 1)
+    :type min_weight: str
+    :return: the concentration, to be converted with :func:`to_iaqi`
+    :rtype: decimal.Decimal
+    :raises ValueError: no NowCast for this pollutant, window under 3 hours
+    :raises OutOfRangeError: a reading is negative
+    :raises InsufficientDataError: less than 2 of the last 3 hours are valid
+    """
+    return nowcast(elem, hourly, hours=hours, min_weight=min_weight)
+
+
+def to_nowcast_aqi(
+    series,
+    hours=12,
+    algo=ALGO_EPA,
+    iaqis=False,
+    extrapolate=False,
+    min_weight="0.5",
+):
+    """Calculate the AQI of the NowCast of PM2.5 and PM10.
+
+    The NowCast only aggregates concentrations, the index is computed by the
+    algorithm, any algorithm works (EPA, MEP...). All the NowCast
+    concentrations are given to it at once.
+
+    :param series: a list of ``(pollutant, hourly readings)``, PM2.5 and PM10
+                   only, see :func:`to_nowcast`
+    :type series: list
+    :param hours: length of the window, see :func:`to_nowcast`
+    :type hours: int
+    :param min_weight: see :func:`to_nowcast`
+    :type min_weight: str
+    :param algo: algorithm, see :func:`to_iaqi`
+    :type algo: str
+    :param iaqis: return a tuple of the AQI and a dict of the IAQIs
+    :type iaqis: bool
+    :param extrapolate: see :func:`to_iaqi`
+    :type extrapolate: bool
+    :raises InsufficientDataError: less than 2 of the last 3 hours of a series
+                                   are valid
+    """
+    _aqi = _load_algo(algo)
+    nowcasts = [
+        (elem, str(nowcast(elem, hourly, hours=hours, min_weight=min_weight)))
+        for elem, hourly in series
+    ]
+    return _aqi.aqi(nowcasts, iaqis=iaqis, extrapolate=extrapolate)
 
 
 def console_aqi():

@@ -22,6 +22,13 @@ class OutOfRangeError(ValueError):
         )
 
 
+class InsufficientDataError(ValueError):
+    """There are not enough valid readings to compute the value.
+
+    The NowCast needs 2 of the last 3 hours (:func:`aqi.to_nowcast`).
+    """
+
+
 class NotApplicableError(OutOfRangeError):
     """The standard leaves this part of the scale blank for the pollutant.
 

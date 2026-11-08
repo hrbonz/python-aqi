@@ -37,9 +37,66 @@ string (so that no binary float gets in the way):
   and the daily maximum of the 8 hour averages of ozone; for the real time
   report, the 1 hour averages (``*_1h``).
 
-The library does not compute averages, and it does not implement the EPA
-NowCast (issue 19) that the EPA uses to turn hourly PM readings into an index
-close to real time. Rolling or fixed windows are up to the caller.
+The library does not compute averages, apart from the PM :ref:`NowCast
+<nowcast>`. Rolling or fixed windows are up to the caller.
+
+.. _nowcast:
+
+NowCast
+-------
+
+The EPA reports the current air quality from hourly PM2.5 and PM10 readings
+with the NowCast, an average of the last 12 hours that follows quick changes
+(TAD, "How the NowCast is calculated"):
+
+#. the weight factor is ``1 - (max - min) / max`` of the 12 readings, and at
+   least 0.5 (which approximates an average of the last 3 hours),
+#. each reading is weighted by the factor raised to the number of hours ago
+   (0 for the current hour),
+#. the NowCast is the sum of the weighted readings over the sum of the weights.
+
+When the air quality is stable the factor is close to 1 and the NowCast is
+close to the plain 12 hour average, when it changes quickly the recent hours
+weigh more. 2 of the last 3 hours must be valid.
+
+The NowCast is only an aggregation of concentrations, the index comes from an
+algorithm as usual, so it works with any algorithm (``algo='mep'`` too). It
+is defined for PM only: ozone has its own method (a rolling two weeks window,
+not implemented) and SO2 and NO2 are 1 hour averages already.
+
+* :func:`aqi.to_nowcast` returns the NowCast concentration, to be converted with
+  :func:`aqi.to_iaqi`,
+* :func:`aqi.to_nowcast_aqi` goes all the way to the AQI from the readings of
+  PM2.5 and PM10.
+
+Readings are strings, oldest first, the last one is the current hour and
+``None`` is a missing hour. Two parameters go beyond the standard, both keep
+its formula:
+
+* ``hours=`` is the window, 12 in the standard (at least 3),
+* ``min_weight=`` is the lower limit of the weight factor, ``'0.5'`` in the
+  standard, between ``'0'`` (only the current hour counts) and ``'1'`` (plain
+  average). A lower limit follows the changes more closely.
+
+Why a shorter window: air quality can change within the hour, for example when
+a strong wind clears the smoke or when a fire plume arrives, and a 12 hour
+weighted average hides it for hours. The World Air Quality Index project
+discusses this in `A Beginner's Guide to Air Quality Instant-Cast and Now-Cast
+<https://aqicn.org/faq/2015-03-15/air-quality-nowcast-a-beginners-guide/be/>`_
+(2015, edited 2020) and proposes, for Asian conditions, a 3 hour window with a
+lower limit of 1/10 on the weight factor instead of the 1/2 of the EPA. That is
+``hours=3, min_weight='0.1'``. With ``hours=3`` alone the limit stays at 0.5,
+which is less reactive: for the readings 10, 20 and 60 the current hour holds
+57% of the weight with 0.5 and 84% with 0.1.
+
+::
+
+    import aqi
+    pm25 = ['9.0', '12.1', '14.3', '20.5', '35.0', '41.2', None, '55.0']
+    aqi.to_nowcast(aqi.POLLUTANT_PM25, pm25)              # NowCast concentration
+    aqi.to_nowcast_aqi([(aqi.POLLUTANT_PM25, pm25)])      # AQI
+    aqi.to_nowcast_aqi([(aqi.POLLUTANT_PM25, pm25)], hours=3, min_weight='0.1',
+                       algo='mep')
 
 Which pollutants
 ----------------

@@ -1,6 +1,20 @@
 Changelog
 =========
 
+1.1.0 (unreleased)
+------------------
+
+New
+~~~
+
+* The EPA NowCast for PM2.5 and PM10 (:ref:`nowcast`): ``aqi.to_nowcast``
+  aggregates hourly readings, ``aqi.to_nowcast_aqi`` goes to the AQI with any
+  algorithm. ``hours=`` changes the window (12 in the standard) and
+  ``min_weight=`` the lower limit of the weight factor (0.5 in the standard),
+  ``hours=3, min_weight='0.1'`` being the proposal of aqicn.org for fast moving
+  episodes in Asia, not part of the standard. ``aqi.InsufficientDataError``
+  when fewer than 2 of the last 3 hours are valid.
+
 1.0.0 (2026-11-08)
 ------------------
 

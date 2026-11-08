@@ -109,6 +109,24 @@ Convert an IAQI to its pollutant concentration::
     import aqi
     mycc = aqi.to_cc(aqi.POLLUTANT_PM25, '22', algo=aqi.ALGO_EPA)
 
+NowCast
+~~~~~~~
+
+For the current air quality from hourly PM2.5 and PM10 readings (strings,
+oldest first, ``None`` for a missing hour), the EPA NowCast gives more weight
+to the recent hours when the air quality changes quickly. It works with any
+algorithm, ``hours=`` changes the window (12 in the standard) and ``min_weight=``
+the lower limit of the weight factor (``'0.5'`` in the standard)::
+
+    pm25 = ['9.0', '12.1', '14.3', '20.5', '35.0', '41.2', None, '55.0']
+    aqi.to_nowcast(aqi.POLLUTANT_PM25, pm25)          # the concentration
+    aqi.to_nowcast_aqi([(aqi.POLLUTANT_PM25, pm25)])  # the AQI
+    aqi.to_nowcast_aqi([(aqi.POLLUTANT_PM25, pm25)], hours=3, min_weight='0.1',
+                       algo=aqi.ALGO_MEP)
+
+It is defined for PM2.5 and PM10 only, and 2 of the last 3 hours must be valid
+(``aqi.InsufficientDataError``). See the documentation for the details.
+
 Out of range values
 ~~~~~~~~~~~~~~~~~~~
 
