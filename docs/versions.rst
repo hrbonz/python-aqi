@@ -103,7 +103,7 @@ that publishes it is now called MEE (see :doc:`standards/index`).
      - Dates
      - Source of the table
    * - ``mep:2012``
-     - HJ 633-2012, "on trial". Kept as python-aqi always computed it.
+     - HJ 633-2012, "on trial". The calculation follows the standard.
      - published 2012-02-29, in force from 2016-01-01, repealed
        2026-03-01
      - HJ 633-2012, table 1
@@ -120,11 +120,17 @@ mep:2012
 
 .. aqi-breakpoints:: mep:2012
 
-This version lays the tables out like the EPA ones (a gap between two bands,
-concentrations truncated to integers, IAQI rounded half to even). That is not
-what HJ 633-2012 says, which is why ``mep:2026`` is built differently. 8 hour
-ozone above 800 µg/m³ and 1 hour SO2 above 800 µg/m³ are "not computed": they
-raise :class:`aqi.OutOfRangeError`.
+The formula interpolates between neighbouring limits of table 1, so a band
+starts where the previous one ends. Concentrations are used as given (the
+standard does not round them) and IAQI and AQI are rounded up (clause 6.2).
+8 hour ozone and 1 hour SO2 above 800 µg/m³ are "not computed" (notes 2 and
+3 of the table): they raise :class:`aqi.NotApplicableError`, which
+:func:`aqi.to_aqi` ignores when other pollutants are given (the 1 hour ozone
+and the 24 hour SO2 report instead).
+
+Until 0.6 python-aqi laid this table out like the EPA ones (a gap between two
+bands, concentrations truncated to integers, IAQI rounded half to even), so
+for example PM2.5 60 µg/m³ was 81 and is now 82.
 
 mep:2026
 ~~~~~~~~
@@ -170,15 +176,19 @@ latest version, and the numbers can differ:
    * - ``to_iaqi('pm10', '60', algo=ALGO_MEP)``
      - 55
      - 58
+   * - ``to_iaqi('pm25', '60', algo=ALGO_MEP_2012)``
+     - 81
+     - 82
 
-To keep the previous results, name the version::
+To keep the previous EPA results, name the version::
 
     import aqi
     aqi.to_iaqi(aqi.POLLUTANT_PM25, '12.1', algo=aqi.ALGO_EPA_2012)
-    aqi.to_aqi(ccs, algo=aqi.ALGO_MEP_2012)
 
-``epa:2012`` and ``mep:2012`` give exactly the 0.6.1 results, this is checked
-against the output of 0.6.1 by the test suite. Pin the version in code that
+``epa:2012`` gives exactly the 0.6.1 results, this is checked against the
+output of 0.6.1 by the test suite. ``mep:2012`` does not: it now follows
+HJ 633-2012 (rounding up, no gap between bands, concentrations not truncated),
+the 0.6 results were an approximation of the standard. Pin the version in code that
 publishes an index, the default will follow the next revision of a standard.
 
 Also new: values outside of a standard's table raise

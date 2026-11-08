@@ -41,7 +41,8 @@ def build_rows(name):
     header = ["Pollutant (unit)"] + [RANGE.format(lo=lo, hi=hi) for lo, hi in pw["aqi"]]
     rows = []
     for elem in sorted(pw["bp"]):
-        exp = Decimal(pw["prec"][elem])
+        # no precision: the limits are shown as the table prints them
+        exp = Decimal(pw["prec"][elem] or "1.")
         cells = []
         for bp in pw["bp"][elem]:
             if bp is None or bp == (0, 0):

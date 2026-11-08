@@ -84,20 +84,20 @@ was renamed Ministry of Ecology and Environment (MEE) in 2018 and publishes
 HJ 633-2026 under that name, the library keeps ``MEP`` for all versions so that
 the name used by existing code does not change:
 
-* ``mep:2012``: HJ 633-2012, laid out like the EPA tables as python-aqi always
-  did
+* ``mep:2012``: HJ 633-2012, IAQI interpolated between the limits of the
+  table and IAQI and AQI rounded up, concentrations used as given
 * ``mep:2026``: HJ 633-2026, effective 1 March 2026. The limits of IAQI 100
   change for PM10 (150 to 120 µg/m³) and PM2.5 (75 to 60 µg/m³), and the
   calculation follows the standard: IAQI interpolated between the limits of
   the table, IAQI and AQI rounded up, concentrations rounded to integers (CO to
   one decimal). This is the default for MEP.
 
-``mep:2012`` is kept as it was, with its approximations (see ``MEP_2012``). The
-default changed with the 2024 and 2026 versions: the same PM2.5 concentration can
+``mep:2012`` used to be laid out like the EPA tables and now follows
+HJ 633-2012 (``aqi.to_iaqi(aqi.POLLUTANT_PM25, '60', algo=aqi.ALGO_MEP_2012)``
+is 82, it was 81). The default changed with the 2024 and 2026 versions: the same PM2.5 concentration can
 now give a different AQI, ``aqi.to_iaqi(aqi.POLLUTANT_PM25, '12.1')`` is 57,
 it was 51, and ``aqi.to_iaqi(aqi.POLLUTANT_PM25, '60', algo=aqi.ALGO_MEP)`` is
-100, it was 81. Use ``algo=aqi.ALGO_EPA_2012`` or ``aqi.ALGO_MEP_2012`` to keep
-the old results.
+100, it was 81. Use ``algo=aqi.ALGO_EPA_2012`` to keep the old EPA results.
 
 1 hour ozone has no value under 0.125 ppm in the EPA table. ``to_aqi`` ignores
 it when other pollutants are given (the standard says to disregard it), for
@@ -134,7 +134,8 @@ the whole scale. 8 hour ozone, for example, stops at 300 because the EPA uses
 1 hour ozone above that. The MEP standard has no such method, so ``extrapolate=True``
 still raises with it. HJ 633-2026 does fix the IAQI of two pollutants above
 their table: SO2 1 hour above 800 µg/m³ is 200 and O3 8 hour above 800 µg/m³
-is 300 (HJ 633-2012 said they are not computed, and ``mep:2012`` raises).
+is 300 (HJ 633-2012 said they are not computed: ``mep:2012`` raises
+``aqi.NotApplicableError`` and ``to_aqi`` leaves them out).
 
 
 Command line

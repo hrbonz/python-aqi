@@ -10,7 +10,7 @@ from decimal import Decimal
 import aqi
 import aqi.algos
 from aqi.algos.mep import MEP, MEP_2012, MEP_2026
-from aqi.exceptions import OutOfRangeError
+from aqi.exceptions import NotApplicableError, OutOfRangeError
 
 IAQIS = [0, 50, 100, 150, 200, 300, 400, 500]
 
@@ -65,7 +65,7 @@ class TestTable3(unittest.TestCase):
                 self.assertEqual(new, old[elem])
 
     def test_new_pm_limits(self):
-        self.assertEqual(MEP_2012().iaqi("pm25", "60"), 81)
+        self.assertEqual(MEP_2012().iaqi("pm25", "60"), 82)  # 81.25 rounded up
         self.assertEqual(MEP_2026().iaqi("pm25", "60"), 100)
         self.assertEqual(MEP_2012().iaqi("pm10", "120"), 85)
         self.assertEqual(MEP_2026().iaqi("pm10", "120"), 100)
@@ -124,10 +124,6 @@ class TestRounding(unittest.TestCase):
         self.assertEqual(algo.piecewise["prec"]["co_24h"], Decimal("0.1"))
         self.assertEqual(algo.piecewise["prec"]["co_1h"], Decimal("0.1"))
 
-    def test_mep_2012_is_untouched(self):
-        """MEP_2012 still answers like 0.6.1, see test_legacy"""
-        self.assertEqual(MEP_2012().iaqi("pm10", "60"), 55)
-
 
 class TestBeyondTheTable(unittest.TestCase):
     """Footnotes b and c of table 3 fix the IAQI above the table"""
@@ -169,10 +165,65 @@ class TestBeyondTheTable(unittest.TestCase):
 
     def test_2012_does_not_compute_them(self):
         """HJ 633-2012 says they are not computed"""
+        for elem in ("so2_1h", "o3_8h"):
+            with self.subTest(elem=elem):
+                with self.assertRaises(NotApplicableError):
+                    MEP_2012().iaqi(elem, "801")
+
+    def test_2012_aqi_uses_the_other_pollutants(self):
+        """The 24 hour SO2 and the 1 hour O3 report instead"""
+        ccs = [("so2_1h", "900"), ("so2_24h", "100")]
+        self.assertEqual(MEP_2012().aqi(ccs, iaqis=True), (75, {"so2_24h": 75}))
+        with self.assertRaises(NotApplicableError):
+            MEP_2012().aqi([("o3_8h", "900")])
+
+
+class TestMep2012(unittest.TestCase):
+    """HJ 633-2012 as written: limit to limit, no rounding of concentrations,
+    IAQI rounded up (clause 6.2)"""
+
+    LIMITS = {
+        "so2_24h": "0 50 150 475 800 1600 2100 2620",
+        "pm10": "0 50 150 250 350 420 500 600",
+        "pm25": "0 35 75 115 150 250 350 500",
+        "co_24h": "0 2 4 14 24 36 48 60",
+        "o3_8h": "0 100 160 215 265 800",
+    }
+
+    def test_limits_of_table_1(self):
+        algo = MEP_2012()
+        for elem, spec in self.LIMITS.items():
+            for iaqi, limit in zip(IAQIS, spec.split()):
+                with self.subTest(elem=elem, iaqi=iaqi):
+                    self.assertEqual(algo.iaqi(elem, limit), iaqi)
+                    self.assertEqual(algo.cc(elem, str(iaqi)), Decimal(limit))
+
+    def test_no_gap_and_no_truncation(self):
+        algo = MEP_2012()
+        self.assertEqual(algo.iaqi("pm25", "35.5"), 51)  # 50 + 50 / 40 * 0.5
+        self.assertEqual(algo.iaqi("pm25", "35.1"), 51)  # 50.125 rounded up
+        self.assertEqual(algo.iaqi("co_24h", "2.1"), 53)  # 52.5 rounded up
+        self.assertEqual(algo.iaqi("pm10", "50.4"), 51)
+
+    def test_rounded_up(self):
+        algo = MEP_2012()
+        self.assertEqual(algo.iaqi("pm25", "60"), 82)  # 81.25
+        self.assertEqual(algo.iaqi("pm10", "60"), 55)  # 55 exactly, not 56
+        self.assertEqual(algo.iaqi("pm25", "0.1"), 1)
+
+    def test_cc_round_trip(self):
+        algo = MEP_2012()
+        for elem in self.LIMITS:
+            for iaqi in range(1, 301):
+                with self.subTest(elem=elem, iaqi=iaqi):
+                    cc = algo.cc(elem, str(iaqi))
+                    self.assertEqual(algo.iaqi(elem, str(cc)), iaqi)
+
+    def test_out_of_range(self):
         with self.assertRaises(OutOfRangeError):
-            MEP_2012().iaqi("so2_1h", "801")
+            MEP_2012().iaqi("pm25", "500.1")
         with self.assertRaises(OutOfRangeError):
-            MEP_2012().iaqi("o3_8h", "801")
+            MEP_2012().iaqi("pm25", "-0.1")
 
 
 class TestSelection(unittest.TestCase):
@@ -190,7 +241,7 @@ class TestSelection(unittest.TestCase):
         self.assertIsInstance(aqi.algos.get_algo(aqi.ALGO_MEP), MEP_2026)
         self.assertIsInstance(aqi.algos.get_algo("mep"), MEP_2026)
         self.assertEqual(aqi.to_iaqi("pm25", "60", algo=aqi.ALGO_MEP), 100)
-        self.assertEqual(aqi.to_iaqi("pm25", "60", algo=aqi.ALGO_MEP_2012), 81)
+        self.assertEqual(aqi.to_iaqi("pm25", "60", algo=aqi.ALGO_MEP_2012), 82)
 
     def test_docstring_cites_its_source(self):
         self.assertIn("HJ 633-2026", MEP_2026.__doc__)

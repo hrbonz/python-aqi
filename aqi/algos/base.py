@@ -1,5 +1,11 @@
 import math
-from decimal import ROUND_CEILING, ROUND_DOWN, ROUND_HALF_EVEN, Decimal
+from decimal import (
+    ROUND_CEILING,
+    ROUND_DOWN,
+    ROUND_HALF_EVEN,
+    Decimal,
+    localcontext,
+)
 from fractions import Fraction
 
 from aqi.exceptions import NotApplicableError, OutOfRangeError
@@ -124,6 +130,9 @@ class PiecewiseAQI(BaseAQI):
     #: pollutants whose IAQI is fixed above the top of the table, by pollutant,
     #: instead of being out of range (HJ 633-2026 table 3 notes b and c)
     saturation = {}
+    #: pollutants that the standard does not compute above the top of the
+    #: table (HJ 633-2012 notes), :class:`NotApplicableError` is raised
+    undefined_above = ()
 
     def _check(self, elem):
         if self.piecewise is None:
@@ -141,7 +150,9 @@ class PiecewiseAQI(BaseAQI):
             return None
 
         raw = Decimal(cc)
-        _cc = raw.quantize(self.piecewise["prec"][elem], rounding=self.cc_rounding)
+        prec = self.piecewise["prec"][elem]
+        # a pollutant without precision is used as given
+        _cc = raw if prec is None else raw.quantize(prec, rounding=self.cc_rounding)
 
         # define breakpoints for this pollutant at this concentration
         bps = self.piecewise["bp"][elem]
@@ -159,6 +170,8 @@ class PiecewiseAQI(BaseAQI):
         if idx is None:
             if _cc > high and elem in self.saturation:
                 return Decimal(self.saturation[elem])
+            elif _cc > high and elem in self.undefined_above:
+                raise NotApplicableError(elem, _cc, low, high)
             elif _cc > high and extrapolate and self._can_extrapolate(elem):
                 idx = len(bps) - 1
             elif _cc < low and bps[0] is None:
@@ -215,10 +228,15 @@ class PiecewiseAQI(BaseAQI):
         (cclo, cchi) = ccs[idx]
 
         # equation
+        prec = self.piecewise["prec"][elem]
+        if prec is None:
+            # no rounding: truncated so that rounding the IAQI of the result
+            # up does not reach the next integer
+            with localcontext() as ctx:
+                ctx.rounding = ROUND_DOWN
+                return (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo
         value = (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo
-        return Decimal(value).quantize(
-            self.piecewise["prec"][elem], rounding=self.cc_rounding
-        )
+        return Decimal(value).quantize(prec, rounding=self.cc_rounding)
 
     def list_pollutants(self):
         return self.piecewise["units"].items()

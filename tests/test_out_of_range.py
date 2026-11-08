@@ -15,7 +15,8 @@ from aqi.exceptions import OutOfRangeError
 def top_of_scale(algo, elem):
     """Return the highest breakpoint concentration and the precision step"""
     pw = algo.piecewise
-    return pw["bp"][elem][-1][1], pw["prec"][elem]
+    # a pollutant without precision (HJ 633-2012) takes any decimals
+    return pw["bp"][elem][-1][1], pw["prec"][elem] or Decimal("1")
 
 
 class TestOutOfRangeError(unittest.TestCase):

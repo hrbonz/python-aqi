@@ -27,5 +27,6 @@ class NotApplicableError(OutOfRangeError):
 
     EPA 1 hour ozone has no value below 0.125 ppm (AQI 101): the standard says
     to disregard it and to use 8 hour ozone. :meth:`BaseAQI.aqi` does so, a
-    direct call to ``iaqi`` or ``cc`` raises this error.
+    direct call to ``iaqi`` or ``cc`` raises this error. HJ 633-2012 does the
+    same above the table for SO2 1 hour and O3 8 hour.
     """

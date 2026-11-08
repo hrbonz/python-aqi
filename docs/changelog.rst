@@ -14,7 +14,7 @@ Standards
   2026-03-01): lower PM10 and PM2.5 limits for IAQI 100, IAQI and AQI rounded
   up, concentrations rounded to integers (CO to one decimal), SO2 1 hour and
   ozone 8 hour above 800 µg/m³ fixed to IAQI 200 and 300. ``mep:2012`` being
-  the tables of 0.6.
+  HJ 633-2012 (the limits of 0.6, a different calculation).
 * Old versions stay selectable: ``algo='epa:2012'``, ``'mep:2012'``, or the
   ``ALGO_*_<year>`` constants. ``aqi.available_algos()`` lists them, ``aqi -l``
   too, and the ``aqi`` command takes ``epa:2012`` as the algorithm.
@@ -30,7 +30,13 @@ Breaking changes
 * The default algorithm (``ALGO_EPA``, ``'epa'``, ``aqi.algos.epa``, and the
   same for MEP) is the **latest** version: the same concentration can give a
   different index than in 0.6, see :ref:`upgrading <upgrading-from-0.6>`.
-  ``epa:2012`` and ``mep:2012`` give the 0.6.1 results.
+  ``epa:2012`` gives the 0.6.1 results. ``mep:2012`` does not, see below.
+* ``mep:2012`` follows HJ 633-2012 instead of an EPA-like layout of its table:
+  no gap between bands, IAQI and AQI rounded up (clause 6.2), concentrations
+  used as given instead of truncated to integers. For example PM2.5 60 µg/m³ was
+  81 and is 82. SO2 1 hour and O3 8 hour above 800 µg/m³ are "not computed"
+  (``NotApplicableError``, ignored by ``to_aqi`` when other pollutants are
+  given).
 * Python 2 is not supported anymore, Python 3.9 or later is required.
 * Values outside of the table of the standard raise
   :class:`aqi.OutOfRangeError` (a ``ValueError``) instead of an

@@ -99,7 +99,7 @@ def static_tables(data, algos):
     for elem, entry in data["pollutants"].items():
         rows = {}
         for name, info in entry["versions"].items():
-            exp = Decimal(algos[name].piecewise["prec"][elem])
+            exp = Decimal(algos[name].piecewise["prec"][elem] or "1.")
             for ilo, ihi, lo, hi in info["bands"]:
                 lo, hi = (Decimal(str(v)).quantize(exp) for v in (lo, hi))
                 rows.setdefault((ilo, ihi), {})[name] = f"{lo}\u00a0–\u00a0{hi}"

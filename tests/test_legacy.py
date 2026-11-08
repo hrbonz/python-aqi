@@ -1,8 +1,9 @@
-"""The 2012 classes must answer exactly like python-aqi 0.6.1 did.
+"""``EPA_2012`` must answer exactly like python-aqi 0.6.1 did.
 
 ``data/legacy_0_6_1.json`` was produced by 0.6.1 itself, see
 ``data/generate_legacy.py``. Whatever the newer versions of a standard
-change, ``EPA_2012`` and ``MEP_2012`` stay as they were.
+change, ``EPA_2012`` stays as it was. ``MEP_2012`` does not: it follows HJ
+633-2012 since 1.0 (issue 61), see ``test_mep_versions``.
 """
 
 import json
@@ -10,12 +11,11 @@ import os
 import unittest
 
 import aqi.algos.epa
-import aqi.algos.mep
 
 with open(os.path.join(os.path.dirname(__file__), "data", "legacy_0_6_1.json")) as f:
     LEGACY = json.load(f)
 
-CLASSES = {"epa": aqi.algos.epa.EPA_2012, "mep": aqi.algos.mep.MEP_2012}
+CLASSES = {"epa": aqi.algos.epa.EPA_2012}
 
 
 class TestLegacy(unittest.TestCase):
