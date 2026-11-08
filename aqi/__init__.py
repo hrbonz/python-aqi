@@ -25,7 +25,7 @@ from aqi.nowcast import nowcast
 __author__ = 'Stefan "hr" Berder'
 __contact__ = "hr@bonz.org"
 __license__ = "BSD 3-Clause"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # the pollutant and algorithm constants are part of the public API
 __all__ = [
