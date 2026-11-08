@@ -32,7 +32,7 @@ class BaseAQI:
         the heart of the algo. Return the IAQI for the given pollutant.
 
         .. warning:: the concentration is passed as a string so
-        :class:`decimal.Decimal` doesn't act up with binary floats.
+            :class:`decimal.Decimal` doesn't act up with binary floats.
 
         :param elem: pollutant constant
         :type elem: int

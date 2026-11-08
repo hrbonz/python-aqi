@@ -114,7 +114,7 @@ def to_cc(elem, iaqi, algo=ALGO_EPA, extrapolate=False):
 
     :param elem: pollutant constant
     :type elem: int
-    :param cc: intermediate AQI
+    :param iaqi: intermediate AQI
     :type iaqi: str
     :param algo: algorithm, ``'epa'`` for the latest version of a family,
                  ``'epa:2012'`` for a given version, or a module name like
