@@ -143,8 +143,9 @@ class TestCcOutOfRange(unittest.TestCase):
             EPA().cc(aqi.POLLUTANT_O3_8H, "301")
 
     def test_extrapolate_round_trip(self):
+        top, _ = top_of_scale(EPA(), aqi.POLLUTANT_PM25)
         cc = EPA().cc(aqi.POLLUTANT_PM25, "600", extrapolate=True)
-        self.assertGreater(cc, Decimal("500.4"))
+        self.assertGreater(cc, top)
         self.assertEqual(EPA().iaqi(aqi.POLLUTANT_PM25, str(cc), extrapolate=True), 600)
 
     def test_mep_does_not_extrapolate(self):
@@ -154,9 +155,8 @@ class TestCcOutOfRange(unittest.TestCase):
     def test_to_cc(self):
         with self.assertRaises(OutOfRangeError):
             aqi.to_cc(aqi.POLLUTANT_PM25, "600")
-        self.assertGreater(
-            aqi.to_cc(aqi.POLLUTANT_PM25, "600", extrapolate=True), Decimal("500.4")
-        )
+        top, _ = top_of_scale(EPA(), aqi.POLLUTANT_PM25)
+        self.assertGreater(aqi.to_cc(aqi.POLLUTANT_PM25, "600", extrapolate=True), top)
 
 
 class TestConsole(unittest.TestCase):
@@ -169,7 +169,7 @@ class TestConsole(unittest.TestCase):
         return ctx.exception.code, out.getvalue(), err.getvalue()
 
     def test_in_range(self):
-        code, out, _ = self.run_cli("aqi.algos.epa", "pm25:12.1")
+        code, out, _ = self.run_cli("epa:2012", "pm25:12.1")
         self.assertEqual(code, 0)
         self.assertEqual(out.strip(), "51")
 

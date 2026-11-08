@@ -46,11 +46,20 @@ class TestGetAlgo(unittest.TestCase):
         self.assertIs(aqi.algos.mep.AQI, aqi.algos.mep.MEP)
 
     def test_public_functions_take_versions(self):
-        for algo in (aqi.ALGO_EPA, "epa", "epa:2012", aqi.ALGO_EPA_2012):
+        # PM2.5 12.1 is the start of Moderate in 2012, not anymore in 2024
+        expected = {
+            aqi.ALGO_EPA: (57, "12.3"),
+            "epa": (57, "12.3"),
+            "epa:2012": (51, "12.1"),
+            aqi.ALGO_EPA_2012: (51, "12.1"),
+        }
+        for algo, (iaqi, cc) in expected.items():
             with self.subTest(algo=algo):
-                self.assertEqual(aqi.to_iaqi(aqi.POLLUTANT_PM25, "12.1", algo), 51)
-                self.assertEqual(aqi.to_aqi([(aqi.POLLUTANT_PM25, "12.1")], algo), 51)
-                self.assertEqual(str(aqi.to_cc(aqi.POLLUTANT_PM25, "51", algo)), "12.1")
+                self.assertEqual(aqi.to_iaqi(aqi.POLLUTANT_PM25, "12.1", algo), iaqi)
+                self.assertEqual(aqi.to_aqi([(aqi.POLLUTANT_PM25, "12.1")], algo), iaqi)
+                self.assertEqual(
+                    str(aqi.to_cc(aqi.POLLUTANT_PM25, str(iaqi), algo)), cc
+                )
 
     def test_unknown_algo_in_public_functions(self):
         with self.assertRaises(ValueError):
@@ -154,10 +163,14 @@ class TestConsole(unittest.TestCase):
         self.assertIn("pm25", out)
 
     def test_selector(self):
-        for algo in ("epa:2012", "epa", "aqi.algos.epa"):
+        for algo, expected in (
+            ("epa:2012", "51"),
+            ("epa", "57"),
+            ("aqi.algos.epa", "57"),
+        ):
             with self.subTest(algo=algo):
                 code, out, err = self.run_cli(algo, "pm25:12.1")
-                self.assertEqual((code, out.strip()), (0, "51"), err)
+                self.assertEqual((code, out.strip()), (0, expected), err)
 
     def test_unknown_selector(self):
         code, _, err = self.run_cli("epa:1900", "pm25:12")

@@ -29,15 +29,15 @@ part of the sdist or the wheel, only of the documentation.
        revised 40 CFR 58 Appendix G. The whole rule (203 pages, document
        2012-30946) is not archived.
    * - :download:`EPA TAD, September 2018 <epa-tad-2018-09_EPA-454-B-18-007.pdf>`
-     - ``EPA_2015`` (planned, #40)
+     - ``aqi.algos.epa.EPA_2015``
      - Ozone 8h breakpoints of the 2015 standard (0.054/0.070/0.085/0.105/0.200).
        First revision with the "Beyond the AQI" Q&A.
    * - :download:`EPA TAD, May 2024 <epa-tad-2024-05_EPA-454-B-24-002.pdf>`
-     - ``EPA_2024`` (planned, #40)
+     - ``aqi.algos.epa.EPA_2024``
      - 2024 PM2.5 breakpoints. Table 6 and its footnote 4 define the
        Hazardous band and how values above 500 are computed.
    * - :download:`EPA TAD, May 2026 <epa-tad-2026-05_EPA-403-B-26-003.pdf>`
-     - ``EPA_2024`` (planned, #40)
+     - ``aqi.algos.epa.EPA_2024``
      - Current edition. Same breakpoints as the May 2024 edition, it only
        gets a new document number and corrects the ozone worked example
        (0.78 written for 0.078, 0.14 for 0.014).

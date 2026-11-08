@@ -17,4 +17,6 @@ ALGO_MEP = "aqi.algos.mep"
 
 # constants for a given version of an algorithm, "family:version"
 ALGO_EPA_2012 = "epa:2012"
+ALGO_EPA_2015 = "epa:2015"
+ALGO_EPA_2024 = "epa:2024"
 ALGO_MEP_2012 = "mep:2012"

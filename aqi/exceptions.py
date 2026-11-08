@@ -20,3 +20,12 @@ class OutOfRangeError(ValueError):
             f"{elem}: {value} is not covered by the algorithm "
             f"(valid range is {low} to {high})"
         )
+
+
+class NotApplicableError(OutOfRangeError):
+    """The standard leaves this part of the scale blank for the pollutant.
+
+    EPA 1 hour ozone has no value below 0.125 ppm (AQI 101): the standard says
+    to disregard it and to use 8 hour ozone. :meth:`BaseAQI.aqi` does so, a
+    direct call to ``iaqi`` or ``cc`` raises this error.
+    """

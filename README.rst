@@ -62,7 +62,26 @@ the latest version of the family (``aqi.ALGO_EPA``, ``aqi.ALGO_EPA_2012`` and
 the matching ``MEP`` constants are available). Old versions stay selectable, the
 default is always the latest. ``aqi.available_algos()`` lists them all::
 
-    aqi.available_algos()  # ['epa:2012', 'mep:2012']
+    aqi.available_algos()
+    # ['epa:2012', 'epa:2015', 'epa:2024', 'mep:2012']
+
+The EPA versions are named after the revision that changed the table:
+
+* ``epa:2012``: what python-aqi computed until 0.6, PM2.5 Good up to 12.0
+  µg/m³ and the 1997 ozone 8 hour breakpoints
+* ``epa:2015``: new ozone 8 hour breakpoints (0.054, 0.070, 0.085, 0.105, 0.200
+  ppm), 1 hour ozone only above 0.125 ppm
+* ``epa:2024``: new PM2.5 breakpoints (Good up to 9.0 µg/m³) and a single
+  Hazardous category, 301 to 500, for every pollutant. This is the default.
+
+The default changed with the 2024 version: the same PM2.5 concentration can
+now give a different AQI, ``aqi.to_iaqi(aqi.POLLUTANT_PM25, '12.1')`` is 57,
+it was 51. Use ``algo=aqi.ALGO_EPA_2012`` to keep the old results.
+
+1 hour ozone has no value under 0.125 ppm in the EPA table. ``to_aqi`` ignores
+it when other pollutants are given (the standard says to disregard it), for
+``to_iaqi`` and ``to_cc`` it raises ``aqi.NotApplicableError``, an
+``OutOfRangeError``.
 
 Convert an IAQI to its pollutant concentration::
 
@@ -87,7 +106,7 @@ The EPA calls AQI values above 500 "Beyond the AQI" and explains how to
 compute them: use the regular formula with the Hazardous breakpoints. This is
 available on request with ``extrapolate=True``::
 
-    aqi.to_aqi([(aqi.POLLUTANT_PM25, '800')], extrapolate=True)  # 698
+    aqi.to_aqi([(aqi.POLLUTANT_PM25, '800')], extrapolate=True)  # 1445
 
 This only applies to the EPA algorithm and to pollutants whose table covers
 the whole scale. 8 hour ozone, for example, stops at 300 because the EPA uses
@@ -102,7 +121,9 @@ Command line
 List supported algorithms and pollutants::
 
     $ aqi -l
-    epa:2012 (latest): o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
+    epa:2012: o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
+    epa:2015: o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
+    epa:2024 (latest): o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
     mep:2012 (latest): so2_24h (µg/m³), so2_1h (µg/m³), no2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), co_24h (mg/m³), co_1h (mg/m³), o3_1h (µg/m³), o3_8h (µg/m³), pm25 (µg/m³)
 
 Pick the version of a standard with ``family:version``, ``epa`` alone means the
@@ -115,39 +136,39 @@ the latest::
 Convert PM2.5 to IAQI using EPA algorithm::
 
     $ aqi aqi.algos.epa pm25:12
-    50
+    56
 
 Convert PM2.5 to IAQI using EPA algorithm (full length)::
 
     $ aqi -c aqi aqi.algos.epa pm25:12
-    50
+    56
 
 Convert pollutants concentrations to AQI using EPA algorithm::
 
-    $ aqi aqi.algos.epa pm25:40.9 o3_8h:0.077 co_1h:8.4
-    114
+    $ aqi aqi.algos.epa pm25:40.9 o3_8h:0.077 co_8h:8.4
+    122
 
 Convert pollutants concentrations to AQI using EPA algorithm, display IAQIs::
 
-    $ aqi -v aqi.algos.epa pm25:40.9 o3_8h:0.077 co_1h:8.4
-    pm25:102 o3_8h:104 co_1h:90
-    114
+    $ aqi -v aqi.algos.epa pm25:40.9 o3_8h:0.077 co_8h:8.4
+    pm25:114 o3_8h:122 co_8h:90
+    122
 
 Convert PM2.5 IAQI to concentration using EPA algorithm::
 
     $ aqi -c cc aqi.algos.epa pm25:39
-    pm2.5:9.3
+    7.0
 
 Out of range values are an error, the message goes to stderr and the exit
 code is 3::
 
     $ aqi aqi.algos.epa pm25:800
-    Out of range: pm25: 800.0 is not covered by the algorithm (valid range is 0.0 to 500.4)
+    Out of range: pm25: 800.0 is not covered by the algorithm (valid range is 0.0 to 325.4)
 
 ``-e`` computes EPA values beyond the scale ("Beyond the AQI")::
 
     $ aqi -e aqi.algos.epa pm25:800
-    698
+    1445
 
 
 Development

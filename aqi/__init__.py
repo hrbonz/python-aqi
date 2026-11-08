@@ -2,6 +2,8 @@ from aqi.algos import available_algos, get_algo, list_algos
 from aqi.constants import (
     ALGO_EPA,
     ALGO_EPA_2012,
+    ALGO_EPA_2015,
+    ALGO_EPA_2024,
     ALGO_MEP,
     ALGO_MEP_2012,
     POLLUTANT_CO_1H,
@@ -16,7 +18,7 @@ from aqi.constants import (
     POLLUTANT_SO2_1H,
     POLLUTANT_SO2_24H,
 )
-from aqi.exceptions import OutOfRangeError
+from aqi.exceptions import NotApplicableError, OutOfRangeError
 
 __author__ = 'Stefan "hr" Berder'
 __contact__ = "hr@bonz.org"
@@ -27,8 +29,11 @@ __version__ = "0.6.1"
 __all__ = [
     "ALGO_EPA",
     "ALGO_EPA_2012",
+    "ALGO_EPA_2015",
+    "ALGO_EPA_2024",
     "ALGO_MEP",
     "ALGO_MEP_2012",
+    "NotApplicableError",
     "OutOfRangeError",
     "POLLUTANT_CO_1H",
     "POLLUTANT_CO_8H",

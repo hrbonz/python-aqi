@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 
-from aqi.algos.epa import AQI
+from aqi.algos.epa import EPA_2012 as AQI
 from aqi.constants import (
     POLLUTANT_CO_8H,
     POLLUTANT_O3_1H,
@@ -12,7 +12,9 @@ from aqi.constants import (
 
 class TestEPA(unittest.TestCase):
     """
-    Test the EPA algorithm based on examples from the EPA official doc.
+    Test the EPA algorithm based on examples from the EPA official doc, the
+    ones of the 2013 edition: this is EPA_2012, see test_epa_versions for the
+    later versions.
     """
 
     def test_PM25(self):
