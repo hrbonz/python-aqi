@@ -43,6 +43,8 @@ path = "aqi/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 include = ["aqi", "tests", "docs", "README.rst", "LICENSE"]
+# the archived standards are for the documentation, not for the package
+exclude = ["docs/standards/*.pdf"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["aqi"]

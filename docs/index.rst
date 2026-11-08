@@ -8,6 +8,8 @@
 .. toctree::
    :maxdepth: 2
 
+   standards/index
+
 
 Indices and tables
 ==================

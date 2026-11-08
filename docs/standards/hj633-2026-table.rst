@@ -1,0 +1,45 @@
+HJ 633-2026, table 3
+====================
+
+Transcription of table 3 (page 3 of the standard) of :download:`HJ 633-2026
+<hj633-2026.pdf>`, "空气质量分指数及对应的污染物项目浓度限值" (IAQI and the
+corresponding pollutant concentration limits). The PDF is a scan without a
+text layer, this table was read from the page image and is what
+``aqi.algos.mep.MEP_2026`` will be built from (#41).
+
+Units: µg/m³, except CO in mg/m³. "-" means the standard gives no value,
+see the notes.
+
+.. csv-table::
+   :header: IAQI, SO2 24h, SO2 1h [a], NO2 24h, NO2 1h [a], CO 24h, CO 1h [a], O3 8h, O3 1h [a], PM10 24h, PM2.5 24h
+
+   0,0,0,0,0,0,0,0,0,0,0
+   50,50,150,40,100,2,5,100,160,50,35
+   100,150,500,80,200,4,10,160,200,120,60
+   150,475,650,180,700,14,35,215,300,250,115
+   200,800,800,280,"1 200",24,60,265,400,350,150
+   300,"1 600",- [b],565,"2 340",36,90,800,800,420,250
+   400,"2 100",- [b],750,"3 090",48,120,- [c],"1 000",500,350
+   500,"2 620",- [b],940,"3 840",60,150,- [c],"1 200",600,500
+
+Notes (from the standard):
+
+a. The 1 hour averages of SO2, NO2, CO and O3 are only used for real time
+   reports.
+b. For SO2 1 hour averages above 800 µg/m³, the IAQI is 200.
+c. For O3 8 hour averages above 800 µg/m³, the IAQI is 300.
+
+Changes from HJ 633-2012
+------------------------
+
+Compared with the ``MEP_2012`` table, only two cells change, both at IAQI 100:
+
+* PM10 24 hour: 150 → **120** µg/m³
+* PM2.5 24 hour: 75 → **60** µg/m³
+
+Everything else (IAQI 0 to 500 for the other pollutants and for PM10 and PM2.5
+above 100) is identical.
+
+Clause 4.2.6 still says IAQI and AQI results are rounded up to an integer
+("全部向上进位取整数"), as clause 6.2 of HJ 633-2012 did. The library rounds half
+to even (issue #4), to settle in #41.
