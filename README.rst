@@ -57,6 +57,13 @@ Get an AQI out of several pollutant concentrations, default algorithm is EPA::
         (aqi.POLLUTANT_O3_8H, '0.087')
     ])
 
+The algorithm is a standard and its version: ``'epa:2012'``, or ``'epa'`` for
+the latest version of the family (``aqi.ALGO_EPA``, ``aqi.ALGO_EPA_2012`` and
+the matching ``MEP`` constants are available). Old versions stay selectable, the
+default is always the latest. ``aqi.available_algos()`` lists them all::
+
+    aqi.available_algos()  # ['epa:2012', 'mep:2012']
+
 Convert an IAQI to its pollutant concentration::
 
     import aqi
@@ -95,8 +102,15 @@ Command line
 List supported algorithms and pollutants::
 
     $ aqi -l
-    aqi.algos.epa: pm10 (µg/m³), o3_8h (ppm), co_8h (ppm), no2_1h (ppb), o3_1h (ppm), so2_1h (ppb), pm25 (µg/m³)
-    aqi.algos.mep: no2_24h (µg/m³), so2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), o3_1h (µg/m³), o3_8h (µg/m³), so2_1h (µg/m³), co_1h (mg/m³), pm25 (µg/m³), co_24h (mg/m³)
+    epa:2012 (latest): o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
+    mep:2012 (latest): so2_24h (µg/m³), so2_1h (µg/m³), no2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), co_24h (mg/m³), co_1h (mg/m³), o3_1h (µg/m³), o3_8h (µg/m³), pm25 (µg/m³)
+
+Pick the version of a standard with ``family:version``, ``epa`` alone means the
+latest version, the module names (``aqi.algos.epa``) still work and also mean
+the latest::
+
+    $ aqi epa:2012 pm25:12
+    50
 
 Convert PM2.5 to IAQI using EPA algorithm::
 

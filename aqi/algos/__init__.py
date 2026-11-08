@@ -1,20 +1,54 @@
-import pkgutil
+import importlib
+
+# algorithm families and the module holding their versions, each module has
+# a ``VERSIONS`` dict (oldest first) and an ``AQI`` class, the latest version
+FAMILIES = {
+    "epa": "aqi.algos.epa",
+    "mep": "aqi.algos.mep",
+}
 
 
-def get_algo(algo_mod):
-    """Instanciate an AQI algorithm class. If there is a problem during
-    the import or instanciation, return None.
+def _versions(family):
+    return importlib.import_module(FAMILIES[family]).VERSIONS
 
-    :param algo_mod: algorithm module canonical name
-    :type algo_mod: str
+
+def available_algos():
+    """Return the names of all the algorithm versions, as ``family:version``
+    strings, ordered by family and then from the oldest to the latest version.
     """
-    # try to import the algorithm module
-    try:
-        mod = __import__(algo_mod, fromlist=[algo_mod])
-    except ImportError:
+    return [
+        f"{family}:{version}" for family in FAMILIES for version in _versions(family)
+    ]
+
+
+def get_algo(algo):
+    """Instanciate an AQI algorithm class. If the algorithm is unknown or
+    there is a problem during the import or instanciation, return None.
+
+    :param algo: one of
+
+        * a ``family:version`` string like ``'epa:2012'``
+        * a family name like ``'epa'``, the latest version
+        * a module canonical name like ``'aqi.algos.epa'``, the latest
+          version of the module (this is how algorithms were always named)
+    :type algo: str
+    """
+    family, sep, version = algo.partition(":")
+    if family in FAMILIES:
+        versions = _versions(family)
+        if not sep:
+            return versions[list(versions)[-1]]()
+        if version in versions:
+            return versions[version]()
+        return None
+    if sep:
         return None
 
-    # try to instanciate an AQI class
+    # a module path
+    try:
+        mod = importlib.import_module(algo)
+    except (ImportError, ValueError):
+        return None
     try:
         return mod.AQI()
     except AttributeError:
@@ -22,17 +56,7 @@ def get_algo(algo_mod):
 
 
 def list_algos():
-    """Return a list of available algorithms with corresponding
-    pollutant
+    """Return a list of tuples with the name of each available algorithm
+    version and its corresponding pollutants
     """
-    _algos = []
-    algos_pkg = "aqi.algos"
-
-    package = __import__(algos_pkg, fromlist=[algos_pkg])
-    for _importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
-        if ispkg is False and modname != "base":
-            algo_mod = ".".join([algos_pkg, modname])
-            mod = __import__(algo_mod, fromlist=[algo_mod])
-            _aqi = mod.AQI()
-            _algos.append((mod.__name__, _aqi.list_pollutants()))
-    return _algos
+    return [(name, get_algo(name).list_pollutants()) for name in available_algos()]

@@ -3,6 +3,25 @@ from decimal import ROUND_DOWN, ROUND_HALF_EVEN, Decimal
 from aqi.exceptions import OutOfRangeError
 
 
+def derive_piecewise(parent, bp=None, prec=None, units=None, aqi=None):
+    """Build the ``piecewise`` table of a new version of a standard from the
+    previous one, only the given parts are replaced.
+
+    :param parent: the ``piecewise`` dict of the previous version
+    :param bp: breakpoints by pollutant to replace or add
+    :param prec: precisions by pollutant to replace or add
+    :param units: units by pollutant to replace or add
+    :param aqi: new list of AQI bands, replaces the whole list
+    :return: a new dict, ``parent`` is left untouched
+    """
+    return {
+        "aqi": list(parent["aqi"] if aqi is None else aqi),
+        "bp": {**parent["bp"], **(bp or {})},
+        "prec": {**parent["prec"], **(prec or {})},
+        "units": {**parent["units"], **(units or {})},
+    }
+
+
 class BaseAQI:
     """A generic AQI class"""
 
@@ -15,7 +34,7 @@ class BaseAQI:
 
         :param elem: pollutant constant
         :type elem: int
-        :param cc: pollutant contentration (µg/m³ or ppm)
+        :param cc: pollutant concentration (µg/m³ or ppm)
         :type cc: str
         :param extrapolate: compute values beyond the scale if the standard
                             allows it, otherwise raise
@@ -101,7 +120,7 @@ class PiecewiseAQI(BaseAQI):
         raw = Decimal(cc)
         _cc = raw.quantize(self.piecewise["prec"][elem], rounding=ROUND_DOWN)
 
-        # define breakpoints for this pollutant at this contentration
+        # define breakpoints for this pollutant at this concentration
         bps = self.piecewise["bp"][elem]
         low, high = bps[0][0], bps[-1][1]
         # a negative value must not be truncated to zero

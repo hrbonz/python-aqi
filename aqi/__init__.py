@@ -1,14 +1,20 @@
-from aqi.algos import get_algo, list_algos
+from aqi.algos import available_algos, get_algo, list_algos
 from aqi.constants import (
     ALGO_EPA,
+    ALGO_EPA_2012,
     ALGO_MEP,
+    ALGO_MEP_2012,
+    POLLUTANT_CO_1H,
     POLLUTANT_CO_8H,
+    POLLUTANT_CO_24H,
     POLLUTANT_NO2_1H,
+    POLLUTANT_NO2_24H,
     POLLUTANT_O3_1H,
     POLLUTANT_O3_8H,
     POLLUTANT_PM10,
     POLLUTANT_PM25,
     POLLUTANT_SO2_1H,
+    POLLUTANT_SO2_24H,
 )
 from aqi.exceptions import OutOfRangeError
 
@@ -20,15 +26,22 @@ __version__ = "0.6.1"
 # the pollutant and algorithm constants are part of the public API
 __all__ = [
     "ALGO_EPA",
+    "ALGO_EPA_2012",
     "ALGO_MEP",
+    "ALGO_MEP_2012",
     "OutOfRangeError",
+    "POLLUTANT_CO_1H",
     "POLLUTANT_CO_8H",
+    "POLLUTANT_CO_24H",
     "POLLUTANT_NO2_1H",
+    "POLLUTANT_NO2_24H",
     "POLLUTANT_O3_1H",
     "POLLUTANT_O3_8H",
     "POLLUTANT_PM10",
     "POLLUTANT_PM25",
     "POLLUTANT_SO2_1H",
+    "POLLUTANT_SO2_24H",
+    "available_algos",
     "console_aqi",
     "get_algo",
     "list_algos",
@@ -36,6 +49,15 @@ __all__ = [
     "to_cc",
     "to_iaqi",
 ]
+
+
+def _load_algo(algo):
+    _aqi = get_algo(algo)
+    if _aqi is None:
+        raise ValueError(
+            f"Unknown algorithm {algo!r}, available: {', '.join(available_algos())}"
+        )
+    return _aqi
 
 
 def to_iaqi(elem, cc, algo=ALGO_EPA, extrapolate=False):
@@ -47,16 +69,18 @@ def to_iaqi(elem, cc, algo=ALGO_EPA, extrapolate=False):
 
     :param elem: pollutant constant
     :type elem: int
-    :param cc: pollutant contentration (µg/m³ or ppm)
+    :param cc: pollutant concentration (µg/m³ or ppm)
     :type cc: str
-    :param algo: algorithm module canonical name
+    :param algo: algorithm, ``'epa'`` for the latest version of a family,
+                 ``'epa:2012'`` for a given version, or a module name like
+                 ``'aqi.algos.epa'`` (latest version)
     :type algo: str
     :param extrapolate: compute values beyond the scale when the standard
                         describes how (EPA "Beyond the AQI")
     :type extrapolate: bool
     :raises OutOfRangeError: the concentration is not covered by the algorithm
     """
-    _aqi = get_algo(algo)
+    _aqi = _load_algo(algo)
     return _aqi.iaqi(elem, cc, extrapolate=extrapolate)
 
 
@@ -66,13 +90,13 @@ def to_aqi(ccs, algo=ALGO_EPA, extrapolate=False):
     :param ccs: a list of tuples of pollutants concentrations with
                 pollutant constant and concentration as values
     :type ccs: list
-    :param algo: algorithm module name
+    :param algo: algorithm, see :func:`to_iaqi`
     :type algo: str
     :param extrapolate: see :func:`to_iaqi`
     :type extrapolate: bool
     :raises OutOfRangeError: a concentration is not covered by the algorithm
     """
-    _aqi = get_algo(algo)
+    _aqi = _load_algo(algo)
     return _aqi.aqi(ccs, extrapolate=extrapolate)
 
 
@@ -85,13 +109,15 @@ def to_cc(elem, iaqi, algo=ALGO_EPA, extrapolate=False):
     :type elem: int
     :param cc: intermediate AQI
     :type iaqi: str
-    :param algo: algorithm module canonical name
+    :param algo: algorithm, ``'epa'`` for the latest version of a family,
+                 ``'epa:2012'`` for a given version, or a module name like
+                 ``'aqi.algos.epa'`` (latest version)
     :type algo: str
     :param extrapolate: see :func:`to_iaqi`
     :type extrapolate: bool
     :raises OutOfRangeError: the AQI value is not covered by the algorithm
     """
-    _aqi = get_algo(algo)
+    _aqi = _load_algo(algo)
     return _aqi.cc(elem, iaqi, extrapolate=extrapolate)
 
 
@@ -117,7 +143,7 @@ def console_aqi():
         "-l",
         action="store_true",
         dest="list",
-        help="list the available algorithms and corresponding pollutants",
+        help="list the available algorithm versions and corresponding pollutants",
     )
     parser.add_argument(
         "-v", action="store_true", dest="verbose", help="add IAQIs to the result"
@@ -132,7 +158,9 @@ def console_aqi():
     parser.add_argument(
         "algo",
         nargs="?",
-        help="the formula to use for the AQI calculation, use the python module path",
+        help="the formula to use for the AQI calculation: a family and version "
+        "like 'epa:2012', a family like 'epa' for its latest version, or the "
+        "python module path",
     )
     parser.add_argument(
         "measures",
@@ -146,9 +174,13 @@ def console_aqi():
 
     # list available algorithms
     if args.list is True:
-        for _algo in list_algos():
-            elems = ", ".join(f"{elem} ({unit})" for elem, unit in _algo[1])
-            print(f"{_algo[0]}: {elems}")
+        latest = {}
+        for name in available_algos():
+            latest[name.split(":")[0]] = name
+        for name, pollutants in list_algos():
+            elems = ", ".join(f"{elem} ({unit})" for elem, unit in pollutants)
+            note = " (latest)" if name in latest.values() else ""
+            print(f"{name}{note}: {elems}")
     else:
         # if not listing but missing other positional argument
         if args.algo is None or args.measures is None:

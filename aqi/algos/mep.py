@@ -15,8 +15,8 @@ from aqi.constants import (
 )
 
 
-class AQI(PiecewiseAQI):
-    """Implementation of the MEP AQI algorithm."""
+class MEP_2012(PiecewiseAQI):
+    """Implementation of the MEP AQI algorithm, HJ 633-2012."""
 
     piecewise = {
         "aqi": [
@@ -140,3 +140,14 @@ class AQI(PiecewiseAQI):
             POLLUTANT_PM25: "µg/m³",
         },
     }
+
+
+# oldest first, the last one is the latest and the default
+VERSIONS = {
+    "2012": MEP_2012,
+}
+
+#: the latest version of the MEP algorithm
+MEP = list(VERSIONS.values())[-1]
+#: historical name, the module is loaded by ``aqi.algos.get_algo``
+AQI = MEP

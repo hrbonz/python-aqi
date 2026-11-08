@@ -12,8 +12,9 @@ from aqi.constants import (
 )
 
 
-class AQI(PiecewiseAQI):
-    """Implementation of the EPA AQI algorithm.
+class EPA_2012(PiecewiseAQI):
+    """Implementation of the EPA AQI algorithm, as python-aqi has always
+    computed it (PM2.5 breakpoints of the 2012 revision).
 
     Above 500 the EPA calls values "Beyond the AQI" and computes them with
     the Hazardous breakpoints (Technical Assistance Document, Q&A), this is
@@ -114,3 +115,14 @@ class AQI(PiecewiseAQI):
             POLLUTANT_NO2_1H: "ppb",
         },
     }
+
+
+# oldest first, the last one is the latest and the default
+VERSIONS = {
+    "2012": EPA_2012,
+}
+
+#: the latest version of the EPA algorithm
+EPA = list(VERSIONS.values())[-1]
+#: historical name, the module is loaded by ``aqi.algos.get_algo``
+AQI = EPA

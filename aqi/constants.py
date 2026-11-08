@@ -11,6 +11,10 @@ POLLUTANT_SO2_24H = "so2_24h"
 POLLUTANT_NO2_1H = "no2_1h"
 POLLUTANT_NO2_24H = "no2_24h"
 
-# constants for algorithms, canonical module name
+# constants for algorithms, canonical module name, always the latest version
 ALGO_EPA = "aqi.algos.epa"
 ALGO_MEP = "aqi.algos.mep"
+
+# constants for a given version of an algorithm, "family:version"
+ALGO_EPA_2012 = "epa:2012"
+ALGO_MEP_2012 = "mep:2012"
