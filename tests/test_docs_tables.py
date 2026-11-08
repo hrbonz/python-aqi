@@ -29,8 +29,8 @@ class TestBreakpointTables(unittest.TestCase):
     def test_values(self):
         _, rows = aqi_tables.build_rows("epa:2024")
         pm25 = next(row for row in rows if row[0].startswith("pm25"))
-        self.assertEqual(pm25[1], "0.0 – 9.0")
-        self.assertEqual(pm25[-1], "225.5 – 325.4")
+        self.assertEqual(pm25[1], "0.0\u00a0–\u00a09.0")
+        self.assertEqual(pm25[-1], "225.5\u00a0–\u00a0325.4")
         o3_1h = next(row for row in rows if row[0].startswith("o3_1h"))
         self.assertEqual(o3_1h[1:3], ["–", "–"])
 

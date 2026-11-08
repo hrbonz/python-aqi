@@ -81,8 +81,7 @@ exclude_patterns = ['_build']
 # output. They are ignored by default.
 #show_authors = False
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# The syntax highlighting style comes from the theme (light and dark).
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -92,12 +91,19 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'shibuya'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'github_url': 'https://github.com/hrbonz/python-aqi',
+    'nav_links': [
+        {'title': 'PyPI', 'url': 'https://pypi.org/project/python-aqi/'},
+    ],
+    'accent_color': 'teal',
+    'show_ai_links': False,
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -121,7 +127,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']  # no custom static files yet (see issue 45)
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.

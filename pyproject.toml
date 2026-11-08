@@ -36,7 +36,10 @@ aqi = "aqi:console_aqi"
 
 [dependency-groups]
 dev = ["coverage", "hatch", "pre-commit", "ruff"]
-docs = ["sphinx"]
+docs = [
+    "shibuya>=2025.10.21",
+    "sphinx",
+]
 
 [tool.hatch.version]
 path = "aqi/__init__.py"

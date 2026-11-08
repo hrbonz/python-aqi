@@ -14,6 +14,9 @@ from docutils.parsers.rst import Directive
 
 from aqi.algos import get_algo
 
+# a range stays on one line, only the columns wrap
+RANGE = "{lo}\u00a0–\u00a0{hi}"
+
 
 def _cell(*children):
     entry = nodes.entry()
@@ -35,7 +38,7 @@ def build_rows(name):
     if algo is None:
         raise ValueError(f"unknown algorithm {name!r}")
     pw = algo.piecewise
-    header = ["Pollutant (unit)"] + [f"{lo} – {hi}" for lo, hi in pw["aqi"]]
+    header = ["Pollutant (unit)"] + [RANGE.format(lo=lo, hi=hi) for lo, hi in pw["aqi"]]
     rows = []
     for elem in sorted(pw["bp"]):
         exp = Decimal(pw["prec"][elem])
@@ -45,7 +48,7 @@ def build_rows(name):
                 cells.append("–")
             else:
                 lo, hi = (Decimal(v).quantize(exp) for v in bp)
-                cells.append(f"{lo} – {hi}")
+                cells.append(RANGE.format(lo=lo, hi=hi))
         cells += ["–"] * (len(pw["aqi"]) - len(cells))
         rows.append([f"{elem} ({pw['units'][elem]})"] + cells)
     return header, rows
