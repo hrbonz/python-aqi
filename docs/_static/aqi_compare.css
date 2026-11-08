@@ -1,0 +1,14 @@
+.aqi-compare .aqi-controls { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin: 1rem 0; align-items: flex-start; }
+.aqi-compare fieldset { border: 0; padding: 0; margin: 0; }
+.aqi-compare legend { font-weight: 600; margin-bottom: .25rem; padding: 0; }
+.aqi-compare label { display: block; cursor: pointer; }
+.aqi-compare label small { opacity: .7; }
+.aqi-compare select { padding: .25rem .5rem; }
+.aqi-compare .aqi-chart { width: 100%; min-height: 380px; }
+.aqi-compare .aqi-chart .u-legend { text-align: left; }
+.aqi-compare table { width: 100%; margin: 1rem 0; }
+.aqi-compare td, .aqi-compare th { white-space: nowrap; }
+.aqi-compare td.aqi-diff { font-weight: 600; background: color-mix(in srgb, var(--aqi-accent, #0f766e) 18%, transparent); }
+.aqi-compare .aqi-swatch { display: inline-block; width: .8em; height: .8em; border-radius: 50%; margin-right: .4em; }
+.aqi-compare.aqi-js .aqi-pollutant h4 { display: none; }
+.aqi-compare .aqi-table-wrap { overflow-x: auto; }

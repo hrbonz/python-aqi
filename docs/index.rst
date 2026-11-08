@@ -10,6 +10,7 @@
 
    concepts
    versions
+   compare
    api
    changelog
    standards/index

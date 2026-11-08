@@ -21,6 +21,8 @@ Standards
 * The PDFs of the standards are archived in the repository
   (:doc:`standards/index`) and the documentation describes each version
   (:doc:`versions`).
+* Interactive charts and tables compare the versions of a standard
+  (:doc:`compare`), built from the library when the documentation is built.
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
