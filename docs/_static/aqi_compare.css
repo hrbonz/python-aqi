@@ -10,5 +10,5 @@
 .aqi-compare td, .aqi-compare th { white-space: nowrap; }
 .aqi-compare td.aqi-diff { font-weight: 600; background: color-mix(in srgb, var(--aqi-accent, #0f766e) 18%, transparent); }
 .aqi-compare .aqi-swatch { display: inline-block; width: .8em; height: .8em; border-radius: 50%; margin-right: .4em; }
-.aqi-compare.aqi-js .aqi-pollutant h4 { display: none; }
+.aqi-compare caption { caption-side: top; text-align: left; padding: .25rem 0; font-weight: 600; }
 .aqi-compare .aqi-table-wrap { overflow-x: auto; }

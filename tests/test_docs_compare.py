@@ -54,3 +54,11 @@ class TestCompareData(unittest.TestCase):
         for elem in aqi_compare.build_data("mep")["pollutants"]:
             self.assertIn(f'data-elem="{elem}"', html)
         self.assertIn("<table", html)
+
+    def test_caption_names_pollutant_and_unit(self):
+        html = aqi_compare.render_html("epa")
+        self.assertIn("<th>IAQI</th>", html)
+        self.assertIn("<caption>o3_8h: concentration limits in ppm", html)
+        self.assertIn(">epa:2012</th>", html)
+        mep = aqi_compare.render_html("mep")
+        self.assertIn("<caption>co_24h: concentration limits in mg/m³", mep)

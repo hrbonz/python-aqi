@@ -123,10 +123,15 @@ def render_html(family):
     for elem, rows in tables.items():
         unit = escape(data["pollutants"][elem]["unit"])
         out.append(f'<div class="aqi-pollutant" data-elem="{escape(elem)}">')
-        out.append(f"<h4>{escape(elem)} ({unit})</h4>")
-        out.append('<table class="aqi-breakpoints"><thead><tr><th>AQI</th>')
+        out.append('<table class="aqi-breakpoints">')
+        out.append(
+            f"<caption>{escape(elem)}: concentration limits in {unit} "
+            "for each IAQI band</caption>"
+        )
+        out.append("<thead><tr><th>IAQI</th>")
         for version in data["versions"]:
-            out.append(f'<th data-version="{version["id"]}">{version["id"]}</th>')
+            name = version["id"]
+            out.append(f'<th data-version="{name}">{name}</th>')
         out.append("</tr></thead><tbody>")
         for label, cells in rows:
             out.append(f"<tr><th>{label}</th>")
