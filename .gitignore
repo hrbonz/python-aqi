@@ -6,6 +6,7 @@ dev_aqi.py
 docs/_build/
 
 .tox
+.envrc
 
 # editors and bytecode
 *.sw[po]

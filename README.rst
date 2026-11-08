@@ -220,9 +220,24 @@ The same checks and the tests on Python 3.9 to 3.14 run on GitHub Actions
 Release
 =======
 
-Use `bumpr` to release the package::
+A release is made from ``master`` with a clean tree, after adding a
+``X.Y.Z (unreleased)`` section to ``docs/changelog.rst``::
 
-    $ bumpr -b -m
+    $ make release SEGMENT=major   # or minor, patch (the default)
+
+It runs, in this order:
+
+``make bump``
+    runs the tests, bumps the version with ``hatch version``, refreshes
+    ``uv.lock``, dates the changelog section, commits ``release: bump to
+    X.Y.Z`` and tags ``X.Y.Z`` (no ``v``).
+``make publish``
+    builds the tagged commit and uploads it to PyPI with ``uv publish``. The
+    token is a PyPI API token in the ``UV_PUBLISH_TOKEN`` environment
+    variable, it is not stored in the repository.
+``make push``
+    pushes the commit and the tag to ``origin`` (``REMOTE=...`` to change it)
+    once the upload worked.
 
 
 Project
