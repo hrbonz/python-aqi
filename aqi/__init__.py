@@ -10,6 +10,7 @@ from aqi.constants import (
     POLLUTANT_PM25,
     POLLUTANT_SO2_1H,
 )
+from aqi.exceptions import OutOfRangeError
 
 __author__ = 'Stefan "hr" Berder'
 __contact__ = "hr@bonz.org"
@@ -20,6 +21,7 @@ __version__ = "0.6.1"
 __all__ = [
     "ALGO_EPA",
     "ALGO_MEP",
+    "OutOfRangeError",
     "POLLUTANT_CO_8H",
     "POLLUTANT_NO2_1H",
     "POLLUTANT_O3_1H",
@@ -36,7 +38,7 @@ __all__ = [
 ]
 
 
-def to_iaqi(elem, cc, algo=ALGO_EPA):
+def to_iaqi(elem, cc, algo=ALGO_EPA, extrapolate=False):
     """Calculate an intermediate AQI for a given pollutant. This is the
     heart of the algo.
 
@@ -49,12 +51,16 @@ def to_iaqi(elem, cc, algo=ALGO_EPA):
     :type cc: str
     :param algo: algorithm module canonical name
     :type algo: str
+    :param extrapolate: compute values beyond the scale when the standard
+                        describes how (EPA "Beyond the AQI")
+    :type extrapolate: bool
+    :raises OutOfRangeError: the concentration is not covered by the algorithm
     """
     _aqi = get_algo(algo)
-    return _aqi.iaqi(elem, cc)
+    return _aqi.iaqi(elem, cc, extrapolate=extrapolate)
 
 
-def to_aqi(ccs, algo=ALGO_EPA):
+def to_aqi(ccs, algo=ALGO_EPA, extrapolate=False):
     """Calculate the AQI based on a list of pollutants
 
     :param ccs: a list of tuples of pollutants concentrations with
@@ -62,12 +68,15 @@ def to_aqi(ccs, algo=ALGO_EPA):
     :type ccs: list
     :param algo: algorithm module name
     :type algo: str
+    :param extrapolate: see :func:`to_iaqi`
+    :type extrapolate: bool
+    :raises OutOfRangeError: a concentration is not covered by the algorithm
     """
     _aqi = get_algo(algo)
-    return _aqi.aqi(ccs)
+    return _aqi.aqi(ccs, extrapolate=extrapolate)
 
 
-def to_cc(elem, iaqi, algo=ALGO_EPA):
+def to_cc(elem, iaqi, algo=ALGO_EPA, extrapolate=False):
     """Calculate a concentration for a given pollutant.
 
     .. warning:: the intermediate AQI is passed as a string
@@ -78,9 +87,12 @@ def to_cc(elem, iaqi, algo=ALGO_EPA):
     :type iaqi: str
     :param algo: algorithm module canonical name
     :type algo: str
+    :param extrapolate: see :func:`to_iaqi`
+    :type extrapolate: bool
+    :raises OutOfRangeError: the AQI value is not covered by the algorithm
     """
     _aqi = get_algo(algo)
-    return _aqi.cc(elem, iaqi)
+    return _aqi.cc(elem, iaqi, extrapolate=extrapolate)
 
 
 def console_aqi():
@@ -109,6 +121,13 @@ def console_aqi():
     )
     parser.add_argument(
         "-v", action="store_true", dest="verbose", help="add IAQIs to the result"
+    )
+    parser.add_argument(
+        "-e",
+        action="store_true",
+        dest="extrapolate",
+        help="compute values beyond the AQI scale when the standard allows it "
+        "(EPA 'Beyond the AQI'), otherwise out of range values are an error",
     )
     parser.add_argument(
         "algo",
@@ -142,40 +161,49 @@ def console_aqi():
             sys.stderr.write("Unknown algorithm or module is missing an AQI class\n")
             parser.print_help()
             sys.exit(1)
-        if args.conv == "aqi":
-            ccs = []
-            for measure in args.measures:
-                (elem, cc) = measure.split(":")
-                ccs.append((elem, cc))
-
-            ret = _aqi.aqi(ccs, iaqis=args.verbose)
-            if args.verbose is True:
-                iaqis = []
-                for constant, iaqi in ret[1].items():
-                    iaqis.append(constant + ":" + str(iaqi))
-                sys.stdout.write(" ".join(iaqis) + "\n")
-                sys.stdout.write(str(ret[0]) + "\n")
-            else:
-                sys.stdout.write(str(ret) + "\n")
-        else:
-            iaqis = []
-            for measure in args.measures:
-                (elem, iaqi) = measure.split(":")
-                iaqis.append((elem, iaqi))
-
-            ret = []
-            for iaqi in iaqis:
-                ret.append((iaqi[0], _aqi.cc(iaqi[0], iaqi[1])))
-            if len(ret) == 1:
-                sys.stdout.write(str(ret[0][1]) + "\n")
-            elif len(ret) > 1:
+        try:
+            if args.conv == "aqi":
                 ccs = []
-                for elem, cc in ret:
-                    if cc is None:
-                        ccs.append(elem + ":na")
-                    else:
-                        ccs.append(elem + ":" + str(cc))
-                sys.stdout.write("\n".join(ccs) + "\n")
+                for measure in args.measures:
+                    (elem, cc) = measure.split(":")
+                    ccs.append((elem, cc))
+
+                ret = _aqi.aqi(ccs, iaqis=args.verbose, extrapolate=args.extrapolate)
+                if args.verbose is True:
+                    iaqis = []
+                    for constant, iaqi in ret[1].items():
+                        iaqis.append(constant + ":" + str(iaqi))
+                    sys.stdout.write(" ".join(iaqis) + "\n")
+                    sys.stdout.write(str(ret[0]) + "\n")
+                else:
+                    sys.stdout.write(str(ret) + "\n")
+            else:
+                iaqis = []
+                for measure in args.measures:
+                    (elem, iaqi) = measure.split(":")
+                    iaqis.append((elem, iaqi))
+
+                ret = []
+                for iaqi in iaqis:
+                    ret.append(
+                        (
+                            iaqi[0],
+                            _aqi.cc(iaqi[0], iaqi[1], extrapolate=args.extrapolate),
+                        )
+                    )
+                if len(ret) == 1:
+                    sys.stdout.write(str(ret[0][1]) + "\n")
+                elif len(ret) > 1:
+                    ccs = []
+                    for elem, cc in ret:
+                        if cc is None:
+                            ccs.append(elem + ":na")
+                        else:
+                            ccs.append(elem + ":" + str(cc))
+                    sys.stdout.write("\n".join(ccs) + "\n")
+        except OutOfRangeError as err:
+            sys.stderr.write(f"Out of range: {err}\n")
+            sys.exit(3)
 
     # end the script without a problem
     sys.exit(0)

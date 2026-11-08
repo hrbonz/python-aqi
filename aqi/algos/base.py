@@ -1,10 +1,12 @@
 from decimal import ROUND_DOWN, ROUND_HALF_EVEN, Decimal
 
+from aqi.exceptions import OutOfRangeError
+
 
 class BaseAQI:
     """A generic AQI class"""
 
-    def iaqi(self, elem, cc):
+    def iaqi(self, elem, cc, extrapolate=False):
         """Calculate an intermediate AQI for a given pollutant. This is
         the heart of the algo. Return the IAQI for the given pollutant.
 
@@ -15,10 +17,14 @@ class BaseAQI:
         :type elem: int
         :param cc: pollutant contentration (µg/m³ or ppm)
         :type cc: str
+        :param extrapolate: compute values beyond the scale if the standard
+                            allows it, otherwise raise
+        :type extrapolate: bool
+        :raises OutOfRangeError: the concentration is not covered
         """
         raise NotImplementedError
 
-    def aqi(self, ccs, iaqis=False):
+    def aqi(self, ccs, iaqis=False, extrapolate=False):
         """Calculate the AQI based on a list of pollutants. Return an
         AQI value, if `iaqis` is set to True, send back a tuple
         containing the AQI and a dict of IAQIs.
@@ -28,10 +34,12 @@ class BaseAQI:
         :type ccs: list
         :param iaqis: return IAQIs with result
         :type iaqis: bool
+        :param extrapolate: see :meth:`iaqi`
+        :type extrapolate: bool
         """
         _iaqis = {}
         for elem, cc in ccs:
-            _iaqi = self.iaqi(elem, cc)
+            _iaqi = self.iaqi(elem, cc, extrapolate=extrapolate)
             if _iaqi is not None:
                 _iaqis[elem] = _iaqi
         _aqi = max(_iaqis.values())
@@ -40,7 +48,7 @@ class BaseAQI:
         else:
             return _aqi
 
-    def cc(self, elem, iaqi):
+    def cc(self, elem, iaqi, extrapolate=False):
         """Calculate a concentration for a given pollutant. Return the
         concentration for the given pollutant based on the intermediate AQI.
 
@@ -50,6 +58,9 @@ class BaseAQI:
         :type elem: int
         :param cc: intermediate AQI
         :type cc: str
+        :param extrapolate: see :meth:`iaqi`
+        :type extrapolate: bool
+        :raises OutOfRangeError: the AQI value is not covered
         """
         raise NotImplementedError
 
@@ -61,29 +72,53 @@ class BaseAQI:
 
 
 class PiecewiseAQI(BaseAQI):
-    """A piecewise function AQI class (like EPA or MEP)"""
+    """A piecewise function AQI class (like EPA or MEP)
+
+    Values outside of the breakpoints raise :class:`OutOfRangeError`. An
+    algorithm whose standard describes how to go beyond the top of the scale
+    sets ``extrapolation`` to True: a pollutant whose table covers the whole
+    scale then extends its last band when ``extrapolate`` is requested.
+    """
 
     piecewise = None
+    extrapolation = False
 
-    def iaqi(self, elem, cc):
+    def _check(self, elem):
         if self.piecewise is None:
             raise NameError("piecewise struct is not defined")
-        if elem not in self.piecewise["bp"].keys():
+        return elem in self.piecewise["bp"]
+
+    def _can_extrapolate(self, elem):
+        """Only pollutants with a band for every AQI band can extend the top"""
+        return self.extrapolation and len(self.piecewise["bp"][elem]) == len(
+            self.piecewise["aqi"]
+        )
+
+    def iaqi(self, elem, cc, extrapolate=False):
+        if not self._check(elem):
             return None
 
-        _cc = Decimal(cc).quantize(self.piecewise["prec"][elem], rounding=ROUND_DOWN)
+        raw = Decimal(cc)
+        _cc = raw.quantize(self.piecewise["prec"][elem], rounding=ROUND_DOWN)
 
         # define breakpoints for this pollutant at this contentration
         bps = self.piecewise["bp"][elem]
-        bplo = None
-        bphi = None
-        idx = 0
-        for bp in bps:
-            if _cc >= bp[0] and _cc <= bp[1]:
-                bplo = bp[0]
-                bphi = bp[1]
+        low, high = bps[0][0], bps[-1][1]
+        # a negative value must not be truncated to zero
+        if raw < 0:
+            raise OutOfRangeError(elem, raw, low, high)
+
+        idx = None
+        for i, bp in enumerate(bps):
+            if bp[0] <= _cc <= bp[1]:
+                idx = i
                 break
-            idx += 1
+        if idx is None:
+            if _cc > high and extrapolate and self._can_extrapolate(elem):
+                idx = len(bps) - 1
+            else:
+                raise OutOfRangeError(elem, _cc, low, high)
+        bplo, bphi = bps[idx]
         # get corresponding AQI boundaries
         (aqilo, aqihi) = self.piecewise["aqi"][idx]
 
@@ -91,27 +126,35 @@ class PiecewiseAQI(BaseAQI):
         value = (aqihi - aqilo) / (bphi - bplo) * (_cc - bplo) + aqilo
         return value.quantize(Decimal("1."), rounding=ROUND_HALF_EVEN)
 
-    def cc(self, elem, iaqi):
-        if self.piecewise is None:
-            raise NameError("piecewise struct is not defined")
-        if elem not in self.piecewise["bp"].keys():
+    def cc(self, elem, iaqi, extrapolate=False):
+        if not self._check(elem):
             return None
 
         _iaqi = int(iaqi)
 
         # define aqi breakpoints for this pollutant at this IAQI
         bps = self.piecewise["aqi"]
-        bplo = None
-        bphi = None
-        idx = 0
-        for bp in bps:
-            if _iaqi >= bp[0] and _iaqi <= bp[1]:
-                bplo = bp[0]
-                bphi = bp[1]
+        ccs = self.piecewise["bp"][elem]
+        low, high = bps[0][0], bps[-1][1]
+        if _iaqi < low:
+            raise OutOfRangeError(elem, _iaqi, low, high)
+
+        idx = None
+        for i, bp in enumerate(bps):
+            if bp[0] <= _iaqi <= bp[1]:
+                idx = i
                 break
-            idx += 1
+        if idx is None:
+            if extrapolate and self._can_extrapolate(elem):
+                idx = len(bps) - 1
+            else:
+                raise OutOfRangeError(elem, _iaqi, low, high)
+        elif idx >= len(ccs):
+            # this pollutant has no band for this part of the scale
+            raise OutOfRangeError(elem, _iaqi, low, bps[len(ccs) - 1][1])
+        bplo, bphi = bps[idx]
         # get corresponding concentration boundaries
-        (cclo, cchi) = self.piecewise["bp"][elem][idx]
+        (cclo, cchi) = ccs[idx]
 
         # equation
         value = (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo

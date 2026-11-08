@@ -12,7 +12,7 @@ class TestBaseAQI(unittest.TestCase):
         """Test the BaseAQI class"""
         _aqi = aqi.algos.base.BaseAQI()
         # dummy iaqi function, return the concentration
-        _aqi.iaqi = lambda x, y: int(y)
+        _aqi.iaqi = lambda x, y, extrapolate=False: int(y)
         self.assertEqual(_aqi.aqi([(0, "20"), (1, "30"), (2, "100")]), 100)
         self.assertEqual(
             _aqi.aqi([(0, "20"), (1, "30"), (2, "100")], iaqis=True),

@@ -13,7 +13,14 @@ from aqi.constants import (
 
 
 class AQI(PiecewiseAQI):
-    """Implementation of the EPA AQI algorithm."""
+    """Implementation of the EPA AQI algorithm.
+
+    Above 500 the EPA calls values "Beyond the AQI" and computes them with
+    the Hazardous breakpoints (Technical Assistance Document, Q&A), this is
+    available with ``extrapolate=True``.
+    """
+
+    extrapolation = True
 
     piecewise = {
         "aqi": [

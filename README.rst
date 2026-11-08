@@ -24,9 +24,17 @@ A library to convert between AQI value and pollutant concentration
 Install
 =======
 
-::
+With pip::
 
     $ pip install python-aqi
+
+With `uv <https://docs.astral.sh/uv/>`_, to add it to a project::
+
+    $ uv add python-aqi
+
+or to install the ``aqi`` command line tool::
+
+    $ uv tool install python-aqi
 
 
 Usage
@@ -53,6 +61,32 @@ Convert an IAQI to its pollutant concentration::
 
     import aqi
     mycc = aqi.to_cc(aqi.POLLUTANT_PM25, '22', algo=aqi.ALGO_EPA)
+
+Out of range values
+~~~~~~~~~~~~~~~~~~~
+
+A concentration (or an AQI) that is not covered by the algorithm raises
+``aqi.OutOfRangeError``, a subclass of ``ValueError`` that carries ``elem``,
+``value``, ``low`` and ``high``. Values are never capped: a capped value would
+hide how far above the scale a measure is, so what to do with it is up to the
+calling code::
+
+    try:
+        myaqi = aqi.to_aqi([(aqi.POLLUTANT_PM25, '800')])
+    except aqi.OutOfRangeError as err:
+        print(err.elem, err.value, err.high)
+
+The EPA calls AQI values above 500 "Beyond the AQI" and explains how to
+compute them: use the regular formula with the Hazardous breakpoints. This is
+available on request with ``extrapolate=True``::
+
+    aqi.to_aqi([(aqi.POLLUTANT_PM25, '800')], extrapolate=True)  # 698
+
+This only applies to the EPA algorithm and to pollutants whose table covers
+the whole scale. 8 hour ozone, for example, stops at 300 because the EPA uses
+1 hour ozone above that. The MEP standard (HJ 633-2012) has no such method, it
+says some values above 800 µg/m³ are not computed, so ``extrapolate=True``
+still raises with it.
 
 
 Command line
@@ -90,17 +124,20 @@ Convert PM2.5 IAQI to concentration using EPA algorithm::
     $ aqi -c cc aqi.algos.epa pm25:39
     pm2.5:9.3
 
+Out of range values are an error, the message goes to stderr and the exit
+code is 3::
+
+    $ aqi aqi.algos.epa pm25:800
+    Out of range: pm25: 800.0 is not covered by the algorithm (valid range is 0.0 to 500.4)
+
+``-e`` computes EPA values beyond the scale ("Beyond the AQI")::
+
+    $ aqi -e aqi.algos.epa pm25:800
+    698
+
 
 Development
 ===========
-
-To install the development environment::
-
-    $ pip install -r dev_requirements.txt
-
-
-Test
-====
 
 Set up the development environment (ruff, pre-commit, hatch, coverage)::
 
