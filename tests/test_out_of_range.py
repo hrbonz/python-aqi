@@ -8,6 +8,7 @@ from unittest import mock
 import aqi
 from aqi.algos.epa import AQI as EPA
 from aqi.algos.mep import AQI as MEP
+from aqi.algos.mep import MEP_2012
 from aqi.exceptions import OutOfRangeError
 
 
@@ -45,8 +46,10 @@ class TestIaqiOutOfRange(unittest.TestCase):
                     algo.iaqi(elem, str(top))
 
     def test_above_top_raises(self):
-        for algo in (EPA(), MEP()):
+        for algo in (EPA(), MEP_2012(), MEP()):
             for elem in algo.piecewise["bp"]:
+                if elem in algo.saturation:
+                    continue  # the standard fixes the IAQI above the table
                 with self.subTest(algo=type(algo).__module__, elem=elem):
                     top, step = top_of_scale(algo, elem)
                     with self.assertRaises(OutOfRangeError) as ctx:
@@ -105,11 +108,14 @@ class TestIaqiExtrapolate(unittest.TestCase):
             EPA().iaqi(aqi.POLLUTANT_O3_8H, str(top + step), extrapolate=True)
 
     def test_mep_never_extrapolates(self):
-        for elem in MEP.piecewise["bp"]:
-            with self.subTest(elem=elem):
-                top, step = top_of_scale(MEP(), elem)
-                with self.assertRaises(OutOfRangeError):
-                    MEP().iaqi(elem, str(top + step), extrapolate=True)
+        for cls in (MEP_2012, MEP):
+            for elem in cls.piecewise["bp"]:
+                if elem in cls.saturation:
+                    continue
+                with self.subTest(cls=cls.__name__, elem=elem):
+                    top, step = top_of_scale(cls(), elem)
+                    with self.assertRaises(OutOfRangeError):
+                        cls().iaqi(elem, str(top + step), extrapolate=True)
 
     def test_negative_still_raises(self):
         with self.assertRaises(OutOfRangeError):

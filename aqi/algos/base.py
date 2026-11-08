@@ -1,4 +1,6 @@
-from decimal import ROUND_DOWN, ROUND_HALF_EVEN, Decimal
+import math
+from decimal import ROUND_CEILING, ROUND_DOWN, ROUND_HALF_EVEN, Decimal
+from fractions import Fraction
 
 from aqi.exceptions import NotApplicableError, OutOfRangeError
 
@@ -113,6 +115,16 @@ class PiecewiseAQI(BaseAQI):
     piecewise = None
     extrapolation = False
 
+    #: how an IAQI is rounded to an integer, ``ROUND_HALF_EVEN`` or
+    #: ``ROUND_CEILING`` (HJ 633 rounds up)
+    rounding = ROUND_HALF_EVEN
+    #: how a concentration is brought to the precision of its pollutant,
+    #: ``ROUND_DOWN`` truncates (EPA), ``ROUND_HALF_EVEN`` is GB/T 8170 (HJ 633)
+    cc_rounding = ROUND_DOWN
+    #: pollutants whose IAQI is fixed above the top of the table, by pollutant,
+    #: instead of being out of range (HJ 633-2026 table 3 notes b and c)
+    saturation = {}
+
     def _check(self, elem):
         if self.piecewise is None:
             raise NameError("piecewise struct is not defined")
@@ -129,7 +141,7 @@ class PiecewiseAQI(BaseAQI):
             return None
 
         raw = Decimal(cc)
-        _cc = raw.quantize(self.piecewise["prec"][elem], rounding=ROUND_DOWN)
+        _cc = raw.quantize(self.piecewise["prec"][elem], rounding=self.cc_rounding)
 
         # define breakpoints for this pollutant at this concentration
         bps = self.piecewise["bp"][elem]
@@ -145,7 +157,9 @@ class PiecewiseAQI(BaseAQI):
                 idx = i
                 break
         if idx is None:
-            if _cc > high and extrapolate and self._can_extrapolate(elem):
+            if _cc > high and elem in self.saturation:
+                return Decimal(self.saturation[elem])
+            elif _cc > high and extrapolate and self._can_extrapolate(elem):
                 idx = len(bps) - 1
             elif _cc < low and bps[0] is None:
                 raise NotApplicableError(elem, _cc, low, high)
@@ -155,9 +169,17 @@ class PiecewiseAQI(BaseAQI):
         # get corresponding AQI boundaries
         (aqilo, aqihi) = self.piecewise["aqi"][idx]
 
+        if self.rounding == ROUND_CEILING:
+            # computed exactly so that rounding up an exact value does not
+            # push it to the next integer
+            value = (Fraction(aqihi) - Fraction(aqilo)) / (
+                Fraction(bphi) - Fraction(bplo)
+            ) * (Fraction(_cc) - Fraction(bplo)) + Fraction(aqilo)
+            return Decimal(math.ceil(value))
+
         # equation
         value = (aqihi - aqilo) / (bphi - bplo) * (_cc - bplo) + aqilo
-        return value.quantize(Decimal("1."), rounding=ROUND_HALF_EVEN)
+        return value.quantize(Decimal("1."), rounding=self.rounding)
 
     def cc(self, elem, iaqi, extrapolate=False):
         if not self._check(elem):
@@ -195,7 +217,7 @@ class PiecewiseAQI(BaseAQI):
         # equation
         value = (cchi - cclo) / (bphi - bplo) * (_iaqi - bplo) + cclo
         return Decimal(value).quantize(
-            self.piecewise["prec"][elem], rounding=ROUND_DOWN
+            self.piecewise["prec"][elem], rounding=self.cc_rounding
         )
 
     def list_pollutants(self):

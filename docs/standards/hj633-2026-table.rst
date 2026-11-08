@@ -5,7 +5,7 @@ Transcription of table 3 (page 3 of the standard) of :download:`HJ 633-2026
 <hj633-2026.pdf>`, "空气质量分指数及对应的污染物项目浓度限值" (IAQI and the
 corresponding pollutant concentration limits). The PDF is a scan without a
 text layer, this table was read from the page image and is what
-``aqi.algos.mep.MEP_2026`` will be built from (#41).
+``aqi.algos.mep.MEP_2026`` is built from.
 
 Units: µg/m³, except CO in mg/m³. "-" means the standard gives no value,
 see the notes.
@@ -40,6 +40,26 @@ Compared with the ``MEP_2012`` table, only two cells change, both at IAQI 100:
 Everything else (IAQI 0 to 500 for the other pollutants and for PM10 and PM2.5
 above 100) is identical.
 
-Clause 4.2.6 still says IAQI and AQI results are rounded up to an integer
-("全部向上进位取整数"), as clause 6.2 of HJ 633-2012 did. The library rounds half
-to even (issue #4), to settle in #41.
+Cross-check
+-----------
+
+The limits of IAQI 100 are the secondary (class two) concentration limits of
+the ambient air quality standard. Table 1 of :download:`GB 3095-2026
+<gb3095-2026.pdf>` (page 3, transition stage, secondary limits) reads the
+same: SO2 24 hour 150 and 1 hour 500, NO2 80 and 200, CO 4 and 10, O3 8 hour
+160 and 1 hour 200, **PM10 24 hour 120** and **PM2.5 24 hour 60** µg/m³ (CO in
+mg/m³). This confirms the two changed cells. The other cells equal the
+HJ 633-2012 table, which was read from a text layer.
+
+Calculation clauses
+-------------------
+
+The clauses of the standard that ``MEP_2026`` applies (translated):
+
+* 4.2.2: concentrations in µg/m³ are rounded to integers following GB/T 8170,
+  CO in mg/m³ to one decimal.
+* 4.2.4: the IAQI is computed with formula (1), interpolating between the
+  neighbouring limits of table 3, and the AQI is the highest IAQI (formula 2).
+* 4.2.6: IAQI and AQI results are all rounded up to an integer ("全部向上进位取整数"),
+  with no decimals. HJ 633-2012 clause 6.2 said the same in fewer words
+  ("全部进位取整数").

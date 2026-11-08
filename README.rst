@@ -63,7 +63,7 @@ the matching ``MEP`` constants are available). Old versions stay selectable, the
 default is always the latest. ``aqi.available_algos()`` lists them all::
 
     aqi.available_algos()
-    # ['epa:2012', 'epa:2015', 'epa:2024', 'mep:2012']
+    # ['epa:2012', 'epa:2015', 'epa:2024', 'mep:2012', 'mep:2026']
 
 The EPA versions are named after the revision that changed the table:
 
@@ -74,9 +74,26 @@ The EPA versions are named after the revision that changed the table:
 * ``epa:2024``: new PM2.5 breakpoints (Good up to 9.0 µg/m³) and a single
   Hazardous category, 301 to 500, for every pollutant. This is the default.
 
-The default changed with the 2024 version: the same PM2.5 concentration can
+The MEP (China) versions follow the standards. The name ``MEP`` stands for the
+Ministry of Environmental Protection, which published HJ 633-2012. The ministry
+was renamed Ministry of Ecology and Environment (MEE) in 2018 and publishes
+HJ 633-2026 under that name, the library keeps ``MEP`` for all versions so that
+the name used by existing code does not change:
+
+* ``mep:2012``: HJ 633-2012, laid out like the EPA tables as python-aqi always
+  did
+* ``mep:2026``: HJ 633-2026, effective 1 March 2026. The limits of IAQI 100
+  change for PM10 (150 to 120 µg/m³) and PM2.5 (75 to 60 µg/m³), and the
+  calculation follows the standard: IAQI interpolated between the limits of
+  the table, IAQI and AQI rounded up, concentrations rounded to integers (CO to
+  one decimal). This is the default for MEP.
+
+``mep:2012`` is kept as it was, with its approximations (see ``MEP_2012``). The
+default changed with the 2024 and 2026 versions: the same PM2.5 concentration can
 now give a different AQI, ``aqi.to_iaqi(aqi.POLLUTANT_PM25, '12.1')`` is 57,
-it was 51. Use ``algo=aqi.ALGO_EPA_2012`` to keep the old results.
+it was 51, and ``aqi.to_iaqi(aqi.POLLUTANT_PM25, '60', algo=aqi.ALGO_MEP)`` is
+100, it was 81. Use ``algo=aqi.ALGO_EPA_2012`` or ``aqi.ALGO_MEP_2012`` to keep
+the old results.
 
 1 hour ozone has no value under 0.125 ppm in the EPA table. ``to_aqi`` ignores
 it when other pollutants are given (the standard says to disregard it), for
@@ -110,9 +127,10 @@ available on request with ``extrapolate=True``::
 
 This only applies to the EPA algorithm and to pollutants whose table covers
 the whole scale. 8 hour ozone, for example, stops at 300 because the EPA uses
-1 hour ozone above that. The MEP standard (HJ 633-2012) has no such method, it
-says some values above 800 µg/m³ are not computed, so ``extrapolate=True``
-still raises with it.
+1 hour ozone above that. The MEP standard has no such method, so ``extrapolate=True``
+still raises with it. HJ 633-2026 does fix the IAQI of two pollutants above
+their table: SO2 1 hour above 800 µg/m³ is 200 and O3 8 hour above 800 µg/m³
+is 300 (HJ 633-2012 said they are not computed, and ``mep:2012`` raises).
 
 
 Command line
@@ -124,7 +142,8 @@ List supported algorithms and pollutants::
     epa:2012: o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
     epa:2015: o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
     epa:2024 (latest): o3_8h (ppm), o3_1h (ppm), pm10 (µg/m³), pm25 (µg/m³), co_8h (ppm), so2_1h (ppb), no2_1h (ppb)
-    mep:2012 (latest): so2_24h (µg/m³), so2_1h (µg/m³), no2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), co_24h (mg/m³), co_1h (mg/m³), o3_1h (µg/m³), o3_8h (µg/m³), pm25 (µg/m³)
+    mep:2012: so2_24h (µg/m³), so2_1h (µg/m³), no2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), co_24h (mg/m³), co_1h (mg/m³), o3_1h (µg/m³), o3_8h (µg/m³), pm25 (µg/m³)
+    mep:2026 (latest): so2_24h (µg/m³), so2_1h (µg/m³), no2_24h (µg/m³), no2_1h (µg/m³), pm10 (µg/m³), co_24h (mg/m³), co_1h (mg/m³), o3_1h (µg/m³), o3_8h (µg/m³), pm25 (µg/m³)
 
 Pick the version of a standard with ``family:version``, ``epa`` alone means the
 latest version, the module names (``aqi.algos.epa``) still work and also mean

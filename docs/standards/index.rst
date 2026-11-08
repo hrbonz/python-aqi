@@ -5,6 +5,12 @@ The breakpoint tables in ``aqi.algos`` come from official documents. Reference
 documents move or disappear (the Chinese government pages especially), so a
 copy of each one is kept here, next to the code that implements it.
 
+The Chinese standards were published by the Ministry of Environmental
+Protection (MEP) until 2018, and by its successor the Ministry of Ecology and
+Environment (MEE) since. The library keeps the name ``MEP`` for all of them
+(``aqi.algos.mep``, ``MEP_2012``, ``MEP_2026``), the links and the provenance
+below use the agency name of the time.
+
 The PDFs live in ``docs/standards/`` in the git repository. They are **not**
 part of the sdist or the wheel, only of the documentation.
 
@@ -49,9 +55,9 @@ part of the sdist or the wheel, only of the documentation.
      - ``aqi.algos.mep.MEP_2012``
      - Technical Regulation on Ambient Air Quality Index (on trial).
    * - :download:`HJ 633-2026 <hj633-2026.pdf>`
-     - ``MEP_2026`` (planned, #41)
+     - ``aqi.algos.mep.MEP_2026``
      - Replaces HJ 633-2012. A scan without a text layer, the IAQI table is
-       transcribed in :doc:`hj633-2026-table`.
+       transcribed and cross-checked in :doc:`hj633-2026-table`.
    * - :download:`GB 3095-2012 <gb3095-2012.pdf>`
      - context
      - Ambient air quality standard, the concentration limits the HJ 633-2012
